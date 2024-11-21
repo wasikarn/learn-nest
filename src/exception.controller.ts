@@ -1,6 +1,6 @@
 import { Controller, HttpStatus } from '@nestjs/common';
 import { TypedException, TypedParam, TypedRoute } from '@nestia/core';
-import type { TypeGuardError } from 'typia';
+import { TypeGuardError } from 'typia';
 
 @Controller('exception')
 export class ExceptionController {
