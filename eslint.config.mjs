@@ -7,12 +7,12 @@ export default tseslint.config({
   languageOptions: {
     parser: tseslint.parser,
     parserOptions: {
+      ecmaVersion: 'latest',
       projectService: true,
       tsconfigRootDir: import.meta.dirname,
     },
   },
   rules: {
     '@typescript-eslint/array-type': 'error',
-    '@typescript-eslint/consistent-type-imports': 'error',
   },
 });
