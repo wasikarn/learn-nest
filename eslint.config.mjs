@@ -1,36 +1,18 @@
-export default {
-  parser: '@typescript-eslint/parser',
-  parserOptions: {
-    project: 'tsconfig.json',
-    tsconfigRootDir: __dirname,
-    sourceType: 'module',
+import eslint from '@eslint/js';
+import tseslint from 'typescript-eslint';
+
+export default tseslint.config({
+  files: ['{src,apps,libs,test}/**/*.ts'],
+  extends: [eslint.configs.recommended, tseslint.configs.recommended],
+  languageOptions: {
+    parser: tseslint.parser,
+    parserOptions: {
+      projectService: true,
+      tsconfigRootDir: import.meta.dirname,
+    },
   },
-  plugins: ['@typescript-eslint/eslint-plugin', 'unused-imports'],
-  extends: [
-    'plugin:@typescript-eslint/recommended',
-    'plugin:prettier/recommended',
-  ],
-  root: true,
-  env: {
-    node: true,
-    jest: true,
-  },
-  ignorePatterns: ['eslint.config.mjs', 'node_modules/', 'dist/'],
   rules: {
-    '@typescript-eslint/interface-name-prefix': 'off',
-    '@typescript-eslint/explicit-function-return-type': 'off',
-    '@typescript-eslint/explicit-module-boundary-types': 'off',
-    '@typescript-eslint/no-explicit-any': 'off',
-    'no-unused-vars': 'off',
-    'unused-imports/no-unused-imports': 'error',
-    'unused-imports/no-unused-vars': [
-      'warn',
-      {
-        vars: 'all',
-        varsIgnorePattern: '^_',
-        args: 'after-used',
-        argsIgnorePattern: '^_',
-      },
-    ],
+    '@typescript-eslint/array-type': 'error',
+    '@typescript-eslint/consistent-type-imports': 'error',
   },
-};
+});

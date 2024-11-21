@@ -1,8 +1,9 @@
-import { INestApplication } from '@nestjs/common';
+import type { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
+import type { OpenAPIObject} from '@nestjs/swagger';
+import { SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { OpenApi, OpenApiV3, SwaggerV2 } from '@samchon/openapi';
+import type { OpenApi, OpenApiV3, SwaggerV2 } from '@samchon/openapi';
 import { NestiaSwaggerComposer } from '@nestia/sdk';
 import process from 'process';
 

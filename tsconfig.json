@@ -17,6 +17,7 @@
     "noFallthroughCasesInSwitch": true,
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
     "outDir": "./dist",
     "removeComments": true,
     "skipLibCheck": true,
@@ -64,7 +65,10 @@
     "strictNullChecks": true
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "apps/**/*",
+    "libs/**/*",
+    "test/**/*"
   ],
   "exclude": [
     "node_modules"

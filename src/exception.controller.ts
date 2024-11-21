@@ -1,6 +1,6 @@
 import { Controller, HttpStatus } from '@nestjs/common';
 import { TypedException, TypedParam, TypedRoute } from '@nestia/core';
-import { TypeGuardError } from 'typia';
+import type { TypeGuardError } from 'typia';
 
 @Controller('exception')
 export class ExceptionController {
@@ -9,7 +9,7 @@ export class ExceptionController {
     status: HttpStatus.BAD_REQUEST,
     description: 'invalid request',
   })
-  async typed(@TypedParam('section') section: string): Promise<string> {
+  typed(@TypedParam('section') section: string): string {
     return section;
   }
 }
