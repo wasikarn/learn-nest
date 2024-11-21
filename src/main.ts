@@ -1,8 +1,15 @@
 import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
+import { OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import process from 'process';
+import { NestiaSwaggerComposer } from '@nestia/sdk';
+import { OpenApi, OpenApiV3, SwaggerV2 } from '@samchon/openapi';
+
+type ApiDocument =
+  | OpenApi.IDocument
+  | OpenApiV3.IDocument
+  | SwaggerV2.IDocument;
 
 async function bootstrap(): Promise<void> {
   const app: INestApplication = await NestFactory.create(AppModule, {
@@ -10,20 +17,20 @@ async function bootstrap(): Promise<void> {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
   });
 
-  const config: Omit<OpenAPIObject, 'paths'> = new DocumentBuilder()
-    .setTitle('Cats example')
-    .setDescription('The cats API description')
-    .setVersion('1.0')
-    .addTag('cats')
-    .build();
-  const documentFactory: () => OpenAPIObject = (): OpenAPIObject =>
-    SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, documentFactory, {
-    jsonDocumentUrl: 'docs/json',
+  const document: ApiDocument = await NestiaSwaggerComposer.document(app, {
+    openapi: '3.1',
+    servers: [
+      {
+        url: 'http://localhost:3000',
+        description: 'Localhost',
+      },
+    ],
+  });
+  SwaggerModule.setup('swagger', app, document as OpenAPIObject, {
+    jsonDocumentUrl: 'swagger/json',
   });
 
   await app.listen(process.env['PORT'] ?? 3000);
 }
 
-// noinspection JSIgnoredPromiseFromCall
-bootstrap();
+bootstrap().catch(console.error);
