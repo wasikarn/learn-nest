@@ -16,4 +16,10 @@ export class PostsService {
 
     return data;
   }
+
+  *postTitles(posts: Post[]): Generator<string, void, unknown> {
+    for (const post of posts) {
+      yield post.title;
+    }
+  }
 }

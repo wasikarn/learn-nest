@@ -11,4 +11,18 @@ export class PostsController {
   async fetchPosts(): Promise<Post[]> {
     return this.postsService.fetchPosts();
   }
+
+  @TypedRoute.Get('titles')
+  async fetchPostTitles(): Promise<string[]> {
+    const posts: Post[] = await this.postsService.fetchPosts();
+    const titlesGenerator: Generator<string, void, unknown> =
+      this.postsService.postTitles(posts);
+    const titles: string[] = [];
+
+    for (const title of titlesGenerator) {
+      titles.push(title);
+    }
+
+    return titles;
+  }
 }
