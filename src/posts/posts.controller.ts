@@ -40,18 +40,4 @@ export class PostsController {
 
     return titles;
   }
-
-  @TypedRoute.Get('effect')
-  @TypedException<BadRequestException>({
-    status: HttpStatus.BAD_REQUEST,
-  })
-  @TypedException<NotFoundException>({
-    status: HttpStatus.NOT_FOUND,
-  })
-  @TypedException<InternalServerErrorException>({
-    status: HttpStatus.INTERNAL_SERVER_ERROR,
-  })
-  async fetchPostsEffect(): Promise<Post[]> {
-    return this.postsService.fetchPostsEffect();
-  }
 }
