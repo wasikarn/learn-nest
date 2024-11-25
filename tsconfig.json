@@ -26,11 +26,6 @@
     "strict": true,
     "strictBuiltinIteratorReturn": true,
     "target": "ESNext",
-    "paths": {
-      "@/*": [
-        "src/*"
-      ]
-    },
     "plugins": [
       {
         "transform": "@nestia/core/lib/transform",
