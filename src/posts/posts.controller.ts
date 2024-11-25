@@ -1,13 +1,28 @@
-import { Controller } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  HttpStatus,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PostsService } from '@/posts/posts.service';
 import { Post } from '@/posts/posts.interface';
-import { TypedRoute } from '@nestia/core';
+import { TypedException, TypedRoute } from '@nestia/core';
 
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @TypedRoute.Get()
+  @TypedException<BadRequestException>({
+    status: HttpStatus.BAD_REQUEST,
+  })
+  @TypedException<NotFoundException>({
+    status: HttpStatus.NOT_FOUND,
+  })
+  @TypedException<InternalServerErrorException>({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+  })
   async fetchPosts(): Promise<Post[]> {
     return this.postsService.fetchPosts();
   }
@@ -24,5 +39,19 @@ export class PostsController {
     }
 
     return titles;
+  }
+
+  @TypedRoute.Get('effect')
+  @TypedException<BadRequestException>({
+    status: HttpStatus.BAD_REQUEST,
+  })
+  @TypedException<NotFoundException>({
+    status: HttpStatus.NOT_FOUND,
+  })
+  @TypedException<InternalServerErrorException>({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+  })
+  async fetchPostsEffect(): Promise<Post[]> {
+    return this.postsService.fetchPostsEffect();
   }
 }
