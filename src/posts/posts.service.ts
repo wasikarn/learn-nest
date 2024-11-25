@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { Post } from '@/posts/posts.interface';
 import { Effect, pipe } from 'effect';
 import { AxiosResponse } from 'axios';
+import { Post } from './posts.interface';
 
 @Injectable()
 export class PostsService {

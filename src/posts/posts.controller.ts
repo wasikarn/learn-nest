@@ -5,10 +5,10 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { PostsService } from '@/posts/posts.service';
-import { Post } from '@/posts/posts.interface';
 import { TypedException, TypedRoute } from '@nestia/core';
 import { Effect, pipe } from 'effect';
+import { PostsService } from './posts.service';
+import { Post } from './posts.interface';
 
 @Controller('posts')
 export class PostsController {
