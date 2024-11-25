@@ -8,6 +8,7 @@ import {
 import { PostsService } from '@/posts/posts.service';
 import { Post } from '@/posts/posts.interface';
 import { TypedException, TypedRoute } from '@nestia/core';
+import { Effect, pipe } from 'effect';
 
 @Controller('posts')
 export class PostsController {
@@ -28,16 +29,25 @@ export class PostsController {
   }
 
   @TypedRoute.Get('titles')
+  @TypedException<BadRequestException>({
+    status: HttpStatus.BAD_REQUEST,
+  })
+  @TypedException<NotFoundException>({
+    status: HttpStatus.NOT_FOUND,
+  })
+  @TypedException<InternalServerErrorException>({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+  })
   async fetchPostTitles(): Promise<string[]> {
-    const posts: Post[] = await this.postsService.fetchPosts();
-    const titlesGenerator: Generator<string, void, unknown> =
-      this.postsService.postTitles(posts);
-    const titles: string[] = [];
-
-    for (const title of titlesGenerator) {
-      titles.push(title);
-    }
-
-    return titles;
+    return Effect.runPromise(
+      pipe(
+        Effect.tryPromise(
+          (): Promise<Post[]> => this.postsService.fetchPosts(),
+        ),
+        Effect.map((posts: Post[]): string[] =>
+          posts.map((post: Post): string => post.title),
+        ),
+      ),
+    );
   }
 }

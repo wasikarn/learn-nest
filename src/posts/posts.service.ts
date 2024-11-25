@@ -23,10 +23,4 @@ export class PostsService {
 
     return Effect.runPromise(pipeEffect);
   }
-
-  *postTitles(posts: Post[]): Generator<string, void, unknown> {
-    for (const post of posts) {
-      yield post.title;
-    }
-  }
 }
