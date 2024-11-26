@@ -13,8 +13,10 @@
     "forceConsistentCasingInFileNames": true,
     "importsNotUsedAsValues": "remove",
     "incremental": true,
+    "lib": ["ES2023"],
     "module": "CommonJS",
     "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
     "noUncheckedSideEffectImports": true,
@@ -25,7 +27,7 @@
     "sourceMap": true,
     "strict": true,
     "strictBuiltinIteratorReturn": true,
-    "target": "ESNext",
+    "target": "ES2023",
     "plugins": [
       {
         "transform": "@nestia/core/lib/transform",
