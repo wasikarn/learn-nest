@@ -1,11 +1,4 @@
-import {
-  BadRequestException,
-  Controller,
-  HttpStatus,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
-import { TypedException, TypedRoute } from '@nestia/core';
+import { Controller, Get } from '@nestjs/common';
 import { Effect, pipe } from 'effect';
 import { PostsService } from './posts.service';
 import { Post } from './posts.interface';
@@ -14,30 +7,12 @@ import { Post } from './posts.interface';
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
-  @TypedRoute.Get()
-  @TypedException<BadRequestException>({
-    status: HttpStatus.BAD_REQUEST,
-  })
-  @TypedException<NotFoundException>({
-    status: HttpStatus.NOT_FOUND,
-  })
-  @TypedException<InternalServerErrorException>({
-    status: HttpStatus.INTERNAL_SERVER_ERROR,
-  })
+  @Get()
   async fetchPosts(): Promise<Post[]> {
     return this.postsService.fetchPosts();
   }
 
-  @TypedRoute.Get('titles')
-  @TypedException<BadRequestException>({
-    status: HttpStatus.BAD_REQUEST,
-  })
-  @TypedException<NotFoundException>({
-    status: HttpStatus.NOT_FOUND,
-  })
-  @TypedException<InternalServerErrorException>({
-    status: HttpStatus.INTERNAL_SERVER_ERROR,
-  })
+  @Get('titles')
   async fetchPostTitles(): Promise<string[]> {
     return Effect.runPromise(
       pipe(
