@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { Effect, pipe } from 'effect';
 import { AxiosResponse } from 'axios';
-import { Post } from './posts.interface';
+import { Post } from './posts.response.dto';
 
 @Injectable()
 export class PostsService {
