@@ -1,9 +1,10 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import process from 'process';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { CatchEverythingFilter } from './common/filters/catch-everything.filter';
 
 async function bootstrap(): Promise<void> {
   const app: INestApplication = await NestFactory.create(AppModule, {
@@ -21,8 +22,13 @@ async function bootstrap(): Promise<void> {
     jsonDocumentUrl: 'swagger/json',
   });
 
+  const httpAdapterHost: HttpAdapterHost = app.get(HttpAdapterHost);
+
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
-  app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalFilters(
+    new CatchEverythingFilter(httpAdapterHost),
+    new HttpExceptionFilter(),
+  );
 
   await app.listen(process.env['PORT'] ?? 3000);
 }

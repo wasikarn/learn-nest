@@ -17,7 +17,7 @@ export class PostsService {
   async fetchPosts(): Promise<Post[]> {
     const { data } = await firstValueFrom(
       this.httpService
-        .get<Post[]>('https://jsonplaceholder.typicode.com/postss')
+        .get<Post[]>('https://jsonplaceholder.typicode.com/posts')
         .pipe(
           catchError((error: AxiosError): never => {
             this.logger.error(error.response?.status);
