@@ -6,6 +6,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Post } from '../domain/entities/post.entity';
+import { ErrorResponse } from '../../common/models/error-response.model';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -19,6 +20,7 @@ export class PostsController {
   })
   @ApiInternalServerErrorResponse({
     description: 'Something went wrong.',
+    type: ErrorResponse,
   })
   async fetchPosts(): Promise<Post[]> {
     return this.postsService.getAllPosts();
