@@ -2,7 +2,7 @@ import { PostsController } from './posts.controller';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PostsService } from './posts.service';
 import { HttpModule } from '@nestjs/axios';
-import { Post } from '../posts.response.dto';
+import { Post } from '../domain/entities/posts.response.dto';
 
 describe('PostsController', (): void => {
   let postsController: PostsController;

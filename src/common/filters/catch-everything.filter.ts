@@ -7,9 +7,10 @@ import {
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
+import { response } from 'express';
 
 @Catch()
-export class CatchEverythingFilter<T> implements ExceptionFilter {
+export class CatchEverythingFilter<T extends Error> implements ExceptionFilter {
   constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
 
   catch(exception: T, host: ArgumentsHost): void {
@@ -21,10 +22,14 @@ export class CatchEverythingFilter<T> implements ExceptionFilter {
       exception instanceof HttpException
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
+
     const responseBody = {
       statusCode: httpStatus,
+      message: response.statusMessage,
       timestamp: new Date().toISOString(),
       path: httpAdapter.getRequestUrl(ctx.getRequest()),
+      error: exception.message,
+      details: exception.cause,
     };
 
     httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
