@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { PostsService } from '../application/posts.service';
+import { PostsService } from './services/posts.service';
 import { HttpModule } from '@nestjs/axios';
-import { PostsController } from '../application/posts.controller';
-import { HttpPostsRepository } from '../adapters/http-posts.repository';
+import { PostsController } from './adapters/controllers/posts.controller';
+import { HttpPostsRepository } from './adapters/api/http-posts.repository';
 
 @Module({
   imports: [HttpModule],

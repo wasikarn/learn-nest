@@ -1,9 +1,9 @@
-import { PostsRepository } from '../ports/posts.repository';
+import { PostsRepository } from '../../domain/ports/posts.repository';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
 import { Injectable, Logger } from '@nestjs/common';
-import { Post } from '../domain/entities/post.entity';
+import { Post } from '../../domain/post';
 
 @Injectable()
 export class HttpPostsRepository implements PostsRepository {

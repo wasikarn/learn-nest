@@ -1,4 +1,4 @@
-import { Post } from '../domain/entities/post.entity';
+import { Post } from '../post';
 
 export interface PostsRepository {
   findAll(): Promise<Post[]>;
