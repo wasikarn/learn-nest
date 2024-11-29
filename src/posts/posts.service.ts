@@ -17,10 +17,10 @@ export class PostsService {
   async fetchPosts(): Promise<Post[]> {
     const { data } = await firstValueFrom(
       this.httpService
-        .get<Post[]>('https://jsonplaceholder.typicode.com/posts')
+        .get<Post[]>('https://jsonplaceholder.typicode.com/postss')
         .pipe(
           catchError((error: AxiosError): never => {
-            this.logger.error(error.response?.data);
+            this.logger.error(error.response?.status);
             throw 'An error happened!';
           }),
         ),
