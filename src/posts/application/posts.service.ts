@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { AxiosError } from 'axios';
-import { Post } from './posts.response.dto';
+import { Post } from '../posts.response.dto';
 import { Data, Effect } from 'effect';
 import { catchError, firstValueFrom } from 'rxjs';
 

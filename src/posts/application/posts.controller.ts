@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { Effect, pipe } from 'effect';
 import { PostsService } from './posts.service';
-import { Post } from './posts.response.dto';
+import { Post } from '../posts.response.dto';
 import {
   ApiInternalServerErrorResponse,
   ApiOkResponse,
