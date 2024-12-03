@@ -2,7 +2,8 @@ import { PostsController } from './posts.controller';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PostsService } from '../../services/posts.service';
 import { HttpModule } from '@nestjs/axios';
-import { Post } from '../domain/entities/posts.response.dto';
+import { Post } from '../../domain/post';
+import { HttpPostsRepository } from '../api/http-posts.repository';
 
 describe('PostsController', (): void => {
   let postsController: PostsController;
@@ -12,7 +13,13 @@ describe('PostsController', (): void => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [HttpModule],
       controllers: [PostsController],
-      providers: [PostsService],
+      providers: [
+        PostsService,
+        {
+          provide: 'PostsRepository',
+          useClass: HttpPostsRepository,
+        },
+      ],
     }).compile();
 
     postsService = moduleRef.get<PostsService>(PostsService);
@@ -30,7 +37,7 @@ describe('PostsController', (): void => {
         },
       ];
       jest
-        .spyOn(postsService, 'fetchPosts')
+        .spyOn(postsService, 'getAllPosts')
         .mockImplementation(async (): Promise<Post[]> => result);
 
       expect(await postsController.fetchPosts()).toBe(result);
