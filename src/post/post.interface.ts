@@ -1,5 +1,4 @@
 export type CreatePost = Omit<Post, 'id'>;
-
 export interface Post {
   body: string;
   id: number;
@@ -9,3 +8,4 @@ export interface Post {
 export interface PostFilter {
   userId?: number;
 }
+export type UpdatePost = Partial<CreatePost>;

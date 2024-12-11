@@ -2,7 +2,7 @@ import { TypedBody, TypedParam, TypedQuery, TypedRoute } from '@nestia/core';
 import { Controller } from '@nestjs/common';
 import { tags } from 'typia';
 
-import { CreatePost, Post, PostFilter } from './post.interface';
+import { CreatePost, Post, PostFilter, UpdatePost } from './post.interface';
 import { PostService } from './post.service';
 
 @Controller('posts')
@@ -24,5 +24,13 @@ export class PostController {
   @TypedRoute.Get()
   public async getPosts(@TypedQuery() filter: PostFilter): Promise<Post[]> {
     return this.postService.getPosts(filter);
+  }
+
+  @TypedRoute.Put(':id')
+  public async updatePost(
+    @TypedParam('id') id: number,
+    @TypedBody() post: UpdatePost,
+  ): Promise<Post> {
+    return this.postService.updatePost(id, post);
   }
 }
