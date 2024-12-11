@@ -10,8 +10,6 @@ export default tseslint.config({
     eslint.configs.recommended,
     tseslint.configs.recommended,
     tseslint.configs.stylistic,
-    perfectionist.configs['recommended-alphabetical'],
-    perfectionist.configs['recommended-line-length'],
     perfectionist.configs['recommended-natural'],
   ],
   languageOptions: {
