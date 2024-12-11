@@ -1,7 +1,8 @@
 import { TypedQuery, TypedRoute } from '@nestia/core';
 import { Controller } from '@nestjs/common';
-import { Post } from './post.interface';
+
 import { PostFilter } from './post-filter.interface';
+import { Post } from './post.interface';
 import { PostService } from './post.service';
 
 @Controller('posts')

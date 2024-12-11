@@ -2,6 +2,7 @@ import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import unusedImports from 'eslint-plugin-unused-imports';
 import jestPlugin from 'eslint-plugin-jest';
+import perfectionist from 'eslint-plugin-perfectionist';
 
 export default tseslint.config({
   files: ['{src,apps,libs,test}/**/*.ts'],
@@ -22,6 +23,7 @@ export default tseslint.config({
     '@typescript-eslint': tseslint.plugin,
     'unused-imports': unusedImports,
     jest: jestPlugin,
+    perfectionist: perfectionist,
   },
   settings: {
     'import/resolver': {
@@ -46,6 +48,13 @@ export default tseslint.config({
         varsIgnorePattern: '^_',
         args: 'after-used',
         argsIgnorePattern: '^_',
+      },
+    ],
+    'perfectionist/sort-imports': [
+      'error',
+      {
+        type: 'natural',
+        order: 'asc',
       },
     ],
   },

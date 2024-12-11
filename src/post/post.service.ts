@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { firstValueFrom } from 'rxjs';
-import { Post } from './post.interface';
+import { Injectable } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
+import { firstValueFrom } from 'rxjs';
+
 import { PostFilter } from './post-filter.interface';
+import { Post } from './post.interface';
 
 @Injectable()
 export class PostService {
