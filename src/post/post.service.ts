@@ -3,7 +3,13 @@ import { Injectable } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
 import { firstValueFrom } from 'rxjs';
 
-import { CreatePost, PostFilter, Posts, UpdatePost } from './post.interface';
+import {
+  Comment,
+  CreatePost,
+  PostFilter,
+  Posts,
+  UpdatePost,
+} from './post.interface';
 
 @Injectable()
 export class PostService {
@@ -32,6 +38,16 @@ export class PostService {
     const { data }: AxiosResponse<Posts> = await firstValueFrom(
       this.httpService.get<Posts>(
         `https://jsonplaceholder.typicode.com/posts/${id}`,
+      ),
+    );
+
+    return data;
+  }
+
+  public async getPostComments(postId: number): Promise<Comment[]> {
+    const { data }: AxiosResponse<Comment[]> = await firstValueFrom(
+      this.httpService.get<Comment[]>(
+        `https://jsonplaceholder.typicode.com/posts/${postId}/comments`,
       ),
     );
 

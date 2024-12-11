@@ -3,7 +3,13 @@ import { Controller, HttpCode } from '@nestjs/common';
 import { HttpStatusCode } from 'axios';
 import { tags } from 'typia';
 
-import { CreatePost, PostFilter, Posts, UpdatePost } from './post.interface';
+import {
+  Comment,
+  CreatePost,
+  PostFilter,
+  Posts,
+  UpdatePost,
+} from './post.interface';
 import { PostService } from './post.service';
 
 import Delete = TypedRoute.Delete;
@@ -33,6 +39,14 @@ export class PostController {
     @TypedParam('id') id: number & tags.Type<'int32'>,
   ): Promise<Posts> {
     return this.postService.getPost(id);
+  }
+
+  @Get(':postId/comments')
+  @HttpCode(HttpStatusCode.Ok)
+  public getPostComments(
+    @TypedParam('postId') postId: number,
+  ): Promise<Comment[]> {
+    return this.postService.getPostComments(postId);
   }
 
   @Get()
