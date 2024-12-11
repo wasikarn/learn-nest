@@ -14,6 +14,11 @@ export class PostController {
     return this.postService.createPost(post);
   }
 
+  @TypedRoute.Delete(':id')
+  public async deletePost(@TypedParam('id') id: number): Promise<void> {
+    return this.postService.deletePost(id);
+  }
+
   @TypedRoute.Get(':id')
   public async getPost(
     @TypedParam('id') id: number & tags.Type<'int32'>,

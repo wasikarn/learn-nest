@@ -20,6 +20,14 @@ export class PostService {
     return data;
   }
 
+  public async deletePost(id: number): Promise<void> {
+    await firstValueFrom(
+      this.httpService.delete<void>(
+        `https://jsonplaceholder.typicode.com/posts/${id}`,
+      ),
+    );
+  }
+
   public async getPost(id: number): Promise<Post> {
     const { data }: AxiosResponse<Post> = await firstValueFrom(
       this.httpService.get<Post>(
