@@ -24,12 +24,12 @@ export class CatchEverythingFilter<T extends Error> implements ExceptionFilter {
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
     const responseBody = {
-      statusCode: httpStatus,
-      message: response.statusMessage,
-      timestamp: new Date().toISOString(),
-      path: httpAdapter.getRequestUrl(ctx.getRequest()),
-      error: exception.message,
       details: exception.cause,
+      error: exception.message,
+      message: response.statusMessage,
+      path: httpAdapter.getRequestUrl(ctx.getRequest()),
+      statusCode: httpStatus,
+      timestamp: new Date().toISOString(),
     };
 
     httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);

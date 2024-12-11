@@ -10,6 +10,9 @@ export default tseslint.config({
     eslint.configs.recommended,
     tseslint.configs.recommended,
     tseslint.configs.stylistic,
+    perfectionist.configs['recommended-alphabetical'],
+    perfectionist.configs['recommended-line-length'],
+    perfectionist.configs['recommended-natural'],
   ],
   languageOptions: {
     parser: tseslint.parser,
@@ -23,7 +26,6 @@ export default tseslint.config({
     '@typescript-eslint': tseslint.plugin,
     'unused-imports': unusedImports,
     jest: jestPlugin,
-    perfectionist: perfectionist,
   },
   settings: {
     'import/resolver': {
@@ -48,13 +50,6 @@ export default tseslint.config({
         varsIgnorePattern: '^_',
         args: 'after-used',
         argsIgnorePattern: '^_',
-      },
-    ],
-    'perfectionist/sort-imports': [
-      'error',
-      {
-        type: 'natural',
-        order: 'asc',
       },
     ],
   },

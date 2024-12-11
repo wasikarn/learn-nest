@@ -21,13 +21,13 @@ async function bootstrap(): Promise<void> {
   });
 
   const document: OpenAPIObject = await NestiaSwaggerComposer.document(app, {
-    openapi: '3.1',
-    servers: [{ url: 'http://localhost:3000', description: 'Local server' }],
     info: {
-      title: 'NestJS API',
       description: 'The NestJS API description',
+      title: 'NestJS API',
       version: '1.0',
     },
+    openapi: '3.1',
+    servers: [{ description: 'Local server', url: 'http://localhost:3000' }],
   });
   SwaggerModule.setup('swagger', app, document as never);
 

@@ -5,8 +5,8 @@ import { AppService } from './app.service';
 import { PostModule } from './post/post.module';
 
 @Module({
-  imports: [PostModule],
   controllers: [AppController],
+  imports: [PostModule],
   providers: [AppService],
 })
 export class AppModule {}
