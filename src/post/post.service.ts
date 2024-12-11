@@ -3,15 +3,15 @@ import { Injectable } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
 import { firstValueFrom } from 'rxjs';
 
-import { CreatePost, Post, PostFilter, UpdatePost } from './post.interface';
+import { CreatePost, PostFilter, Posts, UpdatePost } from './post.interface';
 
 @Injectable()
 export class PostService {
   constructor(private readonly httpService: HttpService) {}
 
-  public async createPost(post: CreatePost): Promise<Post> {
-    const { data }: AxiosResponse<Post> = await firstValueFrom(
-      this.httpService.post<Post>(
+  public async createPost(post: CreatePost): Promise<Posts> {
+    const { data }: AxiosResponse<Posts> = await firstValueFrom(
+      this.httpService.post<Posts>(
         'https://jsonplaceholder.typicode.com/posts',
         post,
       ),
@@ -28,9 +28,9 @@ export class PostService {
     );
   }
 
-  public async getPost(id: number): Promise<Post> {
-    const { data }: AxiosResponse<Post> = await firstValueFrom(
-      this.httpService.get<Post>(
+  public async getPost(id: number): Promise<Posts> {
+    const { data }: AxiosResponse<Posts> = await firstValueFrom(
+      this.httpService.get<Posts>(
         `https://jsonplaceholder.typicode.com/posts/${id}`,
       ),
     );
@@ -38,9 +38,9 @@ export class PostService {
     return data;
   }
 
-  public async getPosts(filter: PostFilter): Promise<Post[]> {
-    const { data }: AxiosResponse<Post[]> = await firstValueFrom(
-      this.httpService.get<Post[]>(
+  public async getPosts(filter: PostFilter): Promise<Posts[]> {
+    const { data }: AxiosResponse<Posts[]> = await firstValueFrom(
+      this.httpService.get<Posts[]>(
         'https://jsonplaceholder.typicode.com/posts',
         {
           params: { userId: filter.userId },
@@ -51,9 +51,9 @@ export class PostService {
     return data;
   }
 
-  public async updatePost(id: number, post: UpdatePost): Promise<Post> {
-    const { data }: AxiosResponse<Post> = await firstValueFrom(
-      this.httpService.put<Post>(
+  public async updatePost(id: number, post: UpdatePost): Promise<Posts> {
+    const { data }: AxiosResponse<Posts> = await firstValueFrom(
+      this.httpService.put<Posts>(
         `https://jsonplaceholder.typicode.com/posts/${id}`,
         post,
       ),
