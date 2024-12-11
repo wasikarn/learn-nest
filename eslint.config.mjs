@@ -34,6 +34,7 @@ export default tseslint.config({
   },
   rules: {
     '@typescript-eslint/array-type': 'error',
+    '@typescript-eslint/no-explicit-any': 'off',
     'no-unused-vars': 'off',
     'no-return-await': 'error',
     'unused-imports/no-unused-imports': 'error',
