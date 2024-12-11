@@ -10,6 +10,16 @@ import { Post } from './post.interface';
 export class PostService {
   constructor(private readonly httpService: HttpService) {}
 
+  public async getPost(id: number): Promise<Post> {
+    const { data }: AxiosResponse<Post> = await firstValueFrom(
+      this.httpService.get<Post>(
+        `https://jsonplaceholder.typicode.com/posts/${id}`,
+      ),
+    );
+
+    return data;
+  }
+
   public async getPosts(filter: PostFilter): Promise<Post[]> {
     const { data }: AxiosResponse<Post[]> = await firstValueFrom(
       this.httpService.get<Post[]>(
