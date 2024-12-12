@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
 import { SafeParseReturnType } from 'zod';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { environmentSchema, EnvSchemaType } from './config/environment-schema';
+import { envSchema, EnvSchemaType } from './config/env-schema';
+import { MongooseConfigService } from './config/mongoose-config.service';
 import { PostModule } from './post/post.module';
 
 @Module({
@@ -18,7 +20,7 @@ import { PostModule } from './post/post.module';
       isGlobal: true,
       validate: (config: Record<string, any>): EnvSchemaType => {
         const parsed: SafeParseReturnType<EnvSchemaType, EnvSchemaType> =
-          environmentSchema.safeParse(config);
+          envSchema.safeParse(config);
 
         if (parsed.error) {
           throw new Error(
@@ -29,6 +31,7 @@ import { PostModule } from './post/post.module';
         return parsed.data;
       },
     }),
+    MongooseModule.forRootAsync({ useClass: MongooseConfigService }),
   ],
   providers: [AppService],
 })
