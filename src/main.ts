@@ -1,18 +1,11 @@
-import { NestiaSwaggerComposer } from '@nestia/sdk';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
-import { SwaggerModule } from '@nestjs/swagger';
-import { OpenApi, OpenApiV3, SwaggerV2 } from '@samchon/openapi';
+import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import process from 'process';
 
 import { AppModule } from './app.module';
 import { CatchEverythingFilter } from './common/filters/catch-everything.filter';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
-
-type OpenAPIObject =
-  | OpenApi.IDocument
-  | OpenApiV3.IDocument
-  | SwaggerV2.IDocument;
 
 async function bootstrap(): Promise<void> {
   const app: INestApplication = await NestFactory.create(AppModule, {
@@ -20,16 +13,15 @@ async function bootstrap(): Promise<void> {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
   });
 
-  const document: OpenAPIObject = await NestiaSwaggerComposer.document(app, {
-    info: {
-      description: 'The NestJS API description',
-      title: 'NestJS API',
-      version: '1.0',
-    },
-    openapi: '3.1',
-    servers: [{ description: 'Local server', url: 'http://localhost:3000' }],
+  const config: Omit<OpenAPIObject, 'paths'> = new DocumentBuilder()
+    .setTitle('NestJS API')
+    .setDescription('The NestJS API description')
+    .setVersion('1.0')
+    .build();
+  const document: OpenAPIObject = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('swagger', app, document, {
+    jsonDocumentUrl: 'swagger/json',
   });
-  SwaggerModule.setup('swagger', app, document as never);
 
   const httpAdapterHost: HttpAdapterHost = app.get(HttpAdapterHost);
 
