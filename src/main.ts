@@ -1,7 +1,7 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
-import process from 'process';
 
 import { AppModule } from './app.module';
 import { CatchEverythingFilter } from './common/filters/catch-everything.filter';
@@ -12,6 +12,8 @@ async function bootstrap(): Promise<void> {
     bufferLogs: true,
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
   });
+
+  const configService: ConfigService = app.get(ConfigService);
 
   const config: Omit<OpenAPIObject, 'paths'> = new DocumentBuilder()
     .setTitle('NestJS API')
@@ -31,7 +33,9 @@ async function bootstrap(): Promise<void> {
     new HttpExceptionFilter(),
   );
 
-  await app.listen(process.env['PORT'] ?? 3000);
+  const port: number = configService.get<number>('PORT') ?? 3000;
+
+  await app.listen(port);
 }
 
 bootstrap().catch(console.error);

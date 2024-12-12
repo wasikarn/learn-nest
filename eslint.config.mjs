@@ -11,6 +11,7 @@ export default tseslint.config({
     tseslint.configs.recommended,
     tseslint.configs.stylistic,
     perfectionist.configs['recommended-natural'],
+    perfectionist.configs['recommended-alphabetical'],
   ],
   languageOptions: {
     parser: tseslint.parser,
