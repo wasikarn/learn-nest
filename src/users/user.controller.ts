@@ -1,11 +1,11 @@
 import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
 import { HttpStatusCode } from 'axios';
 
-import { CreateUserRequestDto } from './create-user.request.dto';
+import { CreateUserRequestDto } from './dto/request/create-user.request.dto';
 import { User } from './user.schema';
 import { UserService } from './user.service';
 
-@Controller('user')
+@Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
