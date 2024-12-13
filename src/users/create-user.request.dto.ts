@@ -1,13 +1,8 @@
-import { IsString } from 'class-validator';
+import { Type } from 'class-transformer';
 
-export class Name {
-  @IsString()
-  firstName: string;
-
-  @IsString()
-  lastName: string;
-}
+import { NameRequestDto } from './name.request.dto';
 
 export class CreateUserRequestDto {
-  name: Name;
+  @Type((): typeof NameRequestDto => NameRequestDto)
+  public readonly name: NameRequestDto;
 }
