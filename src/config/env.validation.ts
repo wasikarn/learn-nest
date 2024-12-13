@@ -1,8 +1,8 @@
 import { SafeParseReturnType, z } from 'zod';
 
-export type EnvSchemaType = z.infer<typeof envSchema>;
+export type EnvSchemaType = z.infer<typeof envValidation>;
 
-export const envSchema = z.object({
+export const envValidation = z.object({
   MONGODB_URI: z.string({
     required_error: 'MONGODB_URI is required',
   }),
@@ -14,7 +14,7 @@ export const envSchema = z.object({
 
 export function validate(config: Record<string, unknown>): EnvSchemaType {
   const parsed: SafeParseReturnType<EnvSchemaType, EnvSchemaType> =
-    envSchema.safeParse(config);
+    envValidation.safeParse(config);
 
   if (parsed.error) {
     throw new Error(
