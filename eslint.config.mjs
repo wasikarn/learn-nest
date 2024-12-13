@@ -3,6 +3,7 @@ import tseslint from 'typescript-eslint';
 import unusedImports from 'eslint-plugin-unused-imports';
 import jestPlugin from 'eslint-plugin-jest';
 import perfectionist from 'eslint-plugin-perfectionist';
+import stylistic from '@stylistic/eslint-plugin';
 
 export default tseslint.config({
   files: ['{src,apps,libs,test}/**/*.ts'],
@@ -10,8 +11,6 @@ export default tseslint.config({
     eslint.configs.recommended,
     tseslint.configs.recommended,
     tseslint.configs.stylistic,
-    perfectionist.configs['recommended-natural'],
-    perfectionist.configs['recommended-alphabetical'],
   ],
   languageOptions: {
     parser: tseslint.parser,
@@ -25,6 +24,8 @@ export default tseslint.config({
     '@typescript-eslint': tseslint.plugin,
     'unused-imports': unusedImports,
     jest: jestPlugin,
+    perfectionist: perfectionist,
+    '@stylistic': stylistic,
   },
   settings: {
     'import/resolver': {
@@ -49,6 +50,23 @@ export default tseslint.config({
         args: 'after-used',
         argsIgnorePattern: '^_',
       },
+    ],
+    'perfectionist/sort-imports': 'error',
+    '@stylistic/padding-line-between-statements': [
+      'error',
+      { blankLine: 'always', prev: '*', next: 'return' },
+      { blankLine: 'always', prev: ['const', 'let', 'var'], next: '*' },
+      {
+        blankLine: 'any',
+        prev: ['const', 'let', 'var'],
+        next: ['const', 'let', 'var'],
+      },
+      { blankLine: 'always', prev: 'directive', next: '*' },
+      { blankLine: 'any', prev: 'directive', next: 'directive' },
+      { blankLine: 'always', prev: ['case', 'default', 'if'], next: '*' },
+      { blankLine: 'always', prev: '*', next: 'try' },
+      { blankLine: 'always', prev: 'try', next: '*' },
+      { blankLine: 'always', prev: '*', next: 'throw' },
     ],
   },
   ignores: [

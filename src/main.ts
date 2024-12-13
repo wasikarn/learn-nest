@@ -21,6 +21,7 @@ async function bootstrap(): Promise<void> {
     .setVersion('1.0')
     .build();
   const document: OpenAPIObject = SwaggerModule.createDocument(app, config);
+
   SwaggerModule.setup('swagger', app, document, {
     jsonDocumentUrl: 'swagger/json',
   });

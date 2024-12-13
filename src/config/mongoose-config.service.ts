@@ -7,16 +7,16 @@ import {
 import { Connection } from 'mongoose';
 import mongooseAutopopulate from 'mongoose-autopopulate';
 
-export const MONGODB_DEFAULT_CONNECTION = 'default';
-
 @Injectable()
 export class MongooseConfigService implements MongooseOptionsFactory {
   constructor(private readonly configService: ConfigService) {}
 
-  createMongooseOptions(): MongooseModuleOptions {
+  async createMongooseOptions(): Promise<MongooseModuleOptions> {
     return {
-      connectionFactory: (connection: Connection): void => {
+      connectionFactory: (connection: Connection): Connection => {
         connection.plugin(mongooseAutopopulate);
+
+        return connection;
       },
       uri: this.configService.get<string>('MONGODB_URI') as string,
     };

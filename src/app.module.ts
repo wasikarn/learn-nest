@@ -6,11 +6,9 @@ import { SafeParseReturnType } from 'zod';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { envSchema, EnvSchemaType } from './config/env-schema';
-import {
-  MONGODB_DEFAULT_CONNECTION,
-  MongooseConfigService,
-} from './config/mongoose-config.service';
+import { MongooseConfigService } from './config/mongoose-config.service';
 import { PostModule } from './post/post.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   controllers: [AppController],
@@ -34,10 +32,8 @@ import { PostModule } from './post/post.module';
         return parsed.data;
       },
     }),
-    MongooseModule.forRootAsync({
-      connectionName: MONGODB_DEFAULT_CONNECTION,
-      useClass: MongooseConfigService,
-    }),
+    MongooseModule.forRootAsync({ useClass: MongooseConfigService }),
+    UsersModule,
   ],
   providers: [AppService],
 })
