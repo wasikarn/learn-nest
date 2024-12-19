@@ -7,10 +7,10 @@ import { Product } from './product.schema';
 export class ProductsService {
   private products: Product[] = [];
 
-  createProduct(product: Product): Product[] {
-    this.products.push(product);
+  createProduct(productData: Product): Product {
+    this.products.push(productData);
 
-    return this.products;
+    return productData;
   }
 
   getProductById(id: string): Product {

@@ -41,7 +41,7 @@ export class ProductsRouter {
     input: productSchema,
     output: productSchema,
   })
-  createProduct(@Input() productData: Product): Product[] {
+  createProduct(@Input() productData: Product): Product {
     return this.productsService.createProduct(productData);
   }
 
