@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { TRPCError } from '@trpc/server';
 
-import { Product } from './product.struct';
+import { Product } from './product.schema';
 
 @Injectable()
 export class ProductsService {

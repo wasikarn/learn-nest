@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const productStruct = z.object({
+export const productSchema = z.object({
   id: z.string(),
   name: z.string(),
   price: z.number(),
@@ -10,4 +10,4 @@ export const productStruct = z.object({
   }),
 });
 
-export type Product = z.infer<typeof productStruct>;
+export type Product = z.infer<typeof productSchema>;

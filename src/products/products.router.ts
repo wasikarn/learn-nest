@@ -1,7 +1,7 @@
 import { Input, Mutation, Query, Router } from 'nestjs-trpc';
 import { z } from 'zod';
 
-import { Product, productStruct } from './product.struct';
+import { Product, productSchema } from './product.schema';
 import { ProductsService } from './products.service';
 
 @Router({ alias: 'products' })
@@ -10,14 +10,14 @@ export class ProductsRouter {
 
   @Query({
     input: z.object({ id: z.string() }),
-    output: productStruct,
+    output: productSchema,
   })
   getProduct(@Input('id') id: string): Product {
     return this.productsService.getProductById(id);
   }
 
   @Query({
-    output: z.array(productStruct),
+    output: z.array(productSchema),
   })
   getProducts(): Product[] {
     return this.productsService.getProducts();
@@ -26,23 +26,23 @@ export class ProductsRouter {
   @Mutation({
     input: z.object({
       id: z.string(),
-      data: productStruct.partial(),
+      data: productSchema.partial(),
     }),
-    output: productStruct,
+    output: productSchema,
   })
   updateProduct(
     @Input('id') id: string,
-    @Input('data') product: Partial<Product>,
+    @Input('data') productData: Partial<Product>,
   ): Product {
-    return this.productsService.updateProduct(id, product);
+    return this.productsService.updateProduct(id, productData);
   }
 
   @Mutation({
-    input: productStruct,
-    output: productStruct,
+    input: productSchema,
+    output: productSchema,
   })
-  createProduct(@Input() product: Product): Product[] {
-    return this.productsService.createProduct(product);
+  createProduct(@Input() productData: Product): Product[] {
+    return this.productsService.createProduct(productData);
   }
 
   @Mutation({
