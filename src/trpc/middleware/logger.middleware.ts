@@ -5,18 +5,25 @@ import {
   TRPCMiddleware,
 } from 'nestjs-trpc';
 
+import { IAppContext } from '../context/context.interface';
+
 @Injectable()
 export class LoggerMiddleware implements TRPCMiddleware {
   private readonly logger: Logger = new Logger(LoggerMiddleware.name);
 
-  async use(opts: MiddlewareOptions): Promise<MiddlewareResponse> {
+  async use(opts: MiddlewareOptions<IAppContext>): Promise<MiddlewareResponse> {
     const start: number = Date.now();
     const { next, path, type } = opts;
+    const { req, res } = opts.ctx;
     const result = await next();
     const meta = {
       path,
       type,
       durationMS: Date.now() - start,
+      method: req.method,
+      statusCode: res.statusCode,
+      ip: req.ip,
+      headers: req.headers,
     };
 
     if (result.ok) {
