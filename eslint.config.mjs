@@ -73,6 +73,7 @@ export default tseslint.config({
     '**/node_modules/**',
     '**/dist/**',
     '**/coverage/**',
+    '**/@generated/**',
     '**/*.config.mjs',
     '**/*.config.js',
     'package.json',

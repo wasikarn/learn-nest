@@ -5,6 +5,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { validate } from './config/env.validation';
 import { MongooseConfigService } from './config/mongoose-config.service';
 import { PostModule } from './post/post.module';
+import { ProductsModule } from './products/products.module';
+import { TrpcModule } from './trpc/trpc.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -20,6 +22,8 @@ import { UsersModule } from './users/users.module';
     }),
     MongooseModule.forRootAsync({ useClass: MongooseConfigService }),
     UsersModule,
+    TrpcModule,
+    ProductsModule,
   ],
   providers: [],
 })
