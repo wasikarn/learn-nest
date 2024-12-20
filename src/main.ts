@@ -34,7 +34,7 @@ async function bootstrap(): Promise<void> {
     new HttpExceptionFilter(),
   );
 
-  const port: number = configService.get<number>('PORT') ?? 3000;
+  const port: number = configService.getOrThrow<number>('PORT') ?? 3000;
 
   await app.listen(port);
 }
