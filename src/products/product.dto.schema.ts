@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const productSchema = z.object({
+export const productDtoSchema = z.object({
   id: z.string(),
   name: z.string(),
   price: z.number(),
@@ -10,4 +10,4 @@ export const productSchema = z.object({
   }),
 });
 
-export type Product = z.infer<typeof productSchema>;
+export type ProductDto = z.infer<typeof productDtoSchema>;

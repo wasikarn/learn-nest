@@ -1,21 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { TRPCError } from '@trpc/server';
 
-import { Product } from './product.schema';
+import { ProductDto } from './product.dto.schema';
 
 @Injectable()
 export class ProductsService {
-  private products: Product[] = [];
+  private products: ProductDto[] = [];
 
-  createProduct(productData: Product): Product {
+  createProduct(productData: ProductDto): ProductDto {
     this.products.push(productData);
 
     return productData;
   }
 
-  getProductById(id: string): Product {
-    const product: Product | undefined = this.products.find(
-      (product: Product): boolean => product.id === id,
+  getProductById(id: string): ProductDto {
+    const product: ProductDto | undefined = this.products.find(
+      (product: ProductDto): boolean => product.id === id,
     );
 
     if (!product) {
@@ -28,13 +28,13 @@ export class ProductsService {
     return product;
   }
 
-  getProducts(): Product[] {
+  getProducts(): ProductDto[] {
     return this.products;
   }
 
-  updateProduct(id: string, product: Partial<Product>): Product {
+  updateProduct(id: string, product: Partial<ProductDto>): ProductDto {
     const productIndex: number = this.products.findIndex(
-      (product: Product): boolean => product.id === id,
+      (product: ProductDto): boolean => product.id === id,
     );
 
     if (productIndex === -1) {
@@ -47,14 +47,14 @@ export class ProductsService {
     this.products[productIndex] = {
       ...this.products[productIndex],
       ...product,
-    } as Product;
+    } as ProductDto;
 
     return this.products[productIndex];
   }
 
   deleteProduct(id: string): boolean {
     const productIndex: number = this.products.findIndex(
-      (product: Product): boolean => product.id === id,
+      (product: ProductDto): boolean => product.id === id,
     );
 
     if (productIndex === -1) {

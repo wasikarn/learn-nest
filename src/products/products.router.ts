@@ -2,7 +2,7 @@ import { Input, Mutation, Query, Router, UseMiddlewares } from 'nestjs-trpc';
 import { z } from 'zod';
 
 import { LoggerMiddleware } from '../trpc/middleware/logger.middleware';
-import { Product, productSchema } from './product.schema';
+import { ProductDto, productDtoSchema } from './product.dto.schema';
 import { ProductsService } from './products.service';
 
 @Router({ alias: 'products' })
@@ -12,38 +12,38 @@ export class ProductsRouter {
 
   @Query({
     input: z.object({ id: z.string() }),
-    output: productSchema,
+    output: productDtoSchema,
   })
-  getProduct(@Input('id') id: string): Product {
+  getProduct(@Input('id') id: string): ProductDto {
     return this.productsService.getProductById(id);
   }
 
   @Query({
-    output: z.array(productSchema),
+    output: z.array(productDtoSchema),
   })
-  getProducts(): Product[] {
+  getProducts(): ProductDto[] {
     return this.productsService.getProducts();
   }
 
   @Mutation({
     input: z.object({
       id: z.string(),
-      data: productSchema.partial(),
+      data: productDtoSchema.partial(),
     }),
-    output: productSchema,
+    output: productDtoSchema,
   })
   updateProduct(
     @Input('id') id: string,
-    @Input('data') productData: Partial<Product>,
-  ): Product {
+    @Input('data') productData: Partial<ProductDto>,
+  ): ProductDto {
     return this.productsService.updateProduct(id, productData);
   }
 
   @Mutation({
-    input: productSchema,
-    output: productSchema,
+    input: productDtoSchema,
+    output: productDtoSchema,
   })
-  createProduct(@Input() productData: Product): Product {
+  createProduct(@Input() productData: ProductDto): ProductDto {
     return this.productsService.createProduct(productData);
   }
 
