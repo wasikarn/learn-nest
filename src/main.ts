@@ -2,6 +2,7 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
+import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 
 import { AppModule } from './app.module';
 import { CatchEverythingFilter } from './common/filters/catch-everything.filter';
@@ -10,7 +11,6 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 async function bootstrap(): Promise<void> {
   const app: INestApplication = await NestFactory.create(AppModule, {
     bufferLogs: true,
-    logger: ['error', 'warn', 'log', 'debug', 'verbose'],
   });
 
   const configService: ConfigService = app.get(ConfigService);
@@ -33,6 +33,8 @@ async function bootstrap(): Promise<void> {
     new CatchEverythingFilter(httpAdapterHost),
     new HttpExceptionFilter(),
   );
+  app.useLogger(app.get(Logger));
+  app.useGlobalInterceptors(new LoggerErrorInterceptor());
 
   const port: number = configService.getOrThrow<number>('PORT') ?? 3000;
 

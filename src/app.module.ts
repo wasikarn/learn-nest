@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { LoggerModule } from 'nestjs-pino';
 
 import { validate } from './config/env.validation';
 import { MongooseConfigService } from './config/mongoose-config.service';
@@ -24,6 +25,7 @@ import { UsersModule } from './users/users.module';
     UsersModule,
     TrpcModule,
     ProductsModule,
+    LoggerModule.forRoot(),
   ],
   providers: [],
 })
