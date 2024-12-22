@@ -4,6 +4,41 @@ import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { PostModule } from '../post/post.module';
 import { UsersModule } from '../users/users.module';
 
+const setupMainApiDocumentation: (app: INestApplication) => void = (
+  app: INestApplication,
+): void => {
+  // Main API options
+  const options = new DocumentBuilder()
+    .setTitle('Main API')
+    .setDescription('The Main API description')
+    .setVersion('1.0')
+    .build();
+
+  // Create the main API document
+  const document = SwaggerModule.createDocument(app, options);
+
+  SwaggerModule.setup('api', app, document, {
+    explorer: true,
+    swaggerOptions: {
+      urls: [
+        {
+          name: '1. API',
+          url: 'api/swagger.json',
+        },
+        {
+          name: '2. Users API',
+          url: 'api/users/swagger.json',
+        },
+        {
+          name: '3. Posts API',
+          url: 'api/posts/swagger.json',
+        },
+      ],
+    },
+    jsonDocumentUrl: '/api/swagger.json',
+  });
+};
+
 const setupUsersApiDocumentation: (app: INestApplication) => void = (
   app: INestApplication,
 ): void => {
@@ -18,7 +53,9 @@ const setupUsersApiDocumentation: (app: INestApplication) => void = (
       include: [UsersModule],
     });
 
-  SwaggerModule.setup('swagger/users', app, userDocumentFactory);
+  SwaggerModule.setup('api/users', app, userDocumentFactory, {
+    jsonDocumentUrl: '/api/users/swagger.json',
+  });
 };
 
 const setupPostsApiDocumentation: (app: INestApplication) => void = (
@@ -35,12 +72,15 @@ const setupPostsApiDocumentation: (app: INestApplication) => void = (
       include: [PostModule],
     });
 
-  SwaggerModule.setup('swagger/posts', app, postDocumentFactory);
+  SwaggerModule.setup('api/posts', app, postDocumentFactory, {
+    jsonDocumentUrl: '/api/posts/swagger.json',
+  });
 };
 
 export const setupSwaggerDocumentation: (app: INestApplication) => void = (
   app: INestApplication,
 ): void => {
+  setupMainApiDocumentation(app);
   setupUsersApiDocumentation(app);
   setupPostsApiDocumentation(app);
 };

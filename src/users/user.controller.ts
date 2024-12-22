@@ -2,8 +2,6 @@ import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { HttpStatusCode } from 'axios';
 
-import { ApiPaginatedResponse } from '../common/api-paginated.response';
-import { PaginatedDto } from '../common/paginated.dto';
 import { CreateUserRequestDto } from './dto/request/create-user.request.dto';
 import { User } from './user.schema';
 import { UserService } from './user.service';
@@ -19,13 +17,8 @@ export class UserController {
     description: 'The records have been successfully retrieved.',
     type: [User],
   })
-  @ApiPaginatedResponse(User)
-  public async getUsers(): Promise<PaginatedDto<User>> {
-    const users: User[] = await this.userService.findAll();
-
-    return Object.assign(new PaginatedDto<User>(), {
-      data: users,
-    });
+  public async getUsers(): Promise<User[]> {
+    return this.userService.findAll();
   }
 
   @Post()
