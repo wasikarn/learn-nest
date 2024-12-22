@@ -1,12 +1,12 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
-import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 
 import { AppModule } from './app.module';
 import { CatchEverythingFilter } from './common/filters/catch-everything.filter';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { setupSwaggerDocumentation } from './common/swagger';
 
 async function bootstrap(): Promise<void> {
   const app: INestApplication = await NestFactory.create(AppModule, {
@@ -14,17 +14,6 @@ async function bootstrap(): Promise<void> {
   });
 
   const configService: ConfigService = app.get(ConfigService);
-
-  const config: Omit<OpenAPIObject, 'paths'> = new DocumentBuilder()
-    .setTitle('NestJS API')
-    .setDescription('The NestJS API description')
-    .setVersion('1.0')
-    .build();
-  const document: OpenAPIObject = SwaggerModule.createDocument(app, config);
-
-  SwaggerModule.setup('swagger', app, document, {
-    jsonDocumentUrl: 'swagger/json',
-  });
 
   const httpAdapterHost: HttpAdapterHost = app.get(HttpAdapterHost);
 
@@ -37,6 +26,8 @@ async function bootstrap(): Promise<void> {
   app.useGlobalInterceptors(new LoggerErrorInterceptor());
 
   const port: number = configService.getOrThrow<number>('PORT') ?? 3000;
+
+  setupSwaggerDocumentation(app);
 
   await app.listen(port);
 }
