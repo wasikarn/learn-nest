@@ -1,31 +1,37 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { LoggerModule } from 'nestjs-pino';
+import { LoggerModule, Params } from 'nestjs-pino';
 
-import { validate } from './config/env.validation';
+import { configOptions } from './config/env.validation';
 import { MongooseConfigService } from './config/mongoose-config.service';
 import { PostModule } from './post/post.module';
 import { ProductsModule } from './products/products.module';
 import { TrpcModule } from './trpc/trpc.module';
 import { UsersModule } from './users/users.module';
 
+const loggerConfig: Params = {
+  pinoHttp: {
+    transport: {
+      target: 'pino-pretty',
+      options: {
+        colorize: true,
+        singleLine: true,
+      },
+    },
+  },
+};
+
 @Module({
   controllers: [],
   imports: [
     PostModule,
-    ConfigModule.forRoot({
-      cache: true,
-      envFilePath: '.env',
-      expandVariables: true,
-      isGlobal: true,
-      validate: validate,
-    }),
+    ConfigModule.forRoot(configOptions),
     MongooseModule.forRootAsync({ useClass: MongooseConfigService }),
     UsersModule,
     TrpcModule,
     ProductsModule,
-    LoggerModule.forRoot(),
+    LoggerModule.forRoot(loggerConfig),
   ],
   providers: [],
 })
