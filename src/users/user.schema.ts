@@ -21,8 +21,8 @@ export class User {
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
+export type UserDocument = HydratedDocument<User & UserDocumentOverride>;
+
 export interface UserDocumentOverride {
   name: Types.Subdocument<Name & Types.ObjectId>;
 }
-
-export type UserDocument = HydratedDocument<User & UserDocumentOverride>;

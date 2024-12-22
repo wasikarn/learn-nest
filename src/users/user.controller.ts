@@ -11,29 +11,29 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get()
-  @HttpCode(HttpStatusCode.Ok)
   @ApiOkResponse({
     description: 'The records have been successfully retrieved.',
     type: [User],
   })
+  @Get()
+  @HttpCode(HttpStatusCode.Ok)
   public async getUsers(): Promise<User[]> {
     return this.userService.findAll();
   }
 
-  @Post()
-  @HttpCode(HttpStatusCode.Created)
   @ApiCreatedResponse({
     description: 'The record has been successfully created.',
-    type: User,
     example: {
+      fullName: 'John Doe',
       name: {
         firstName: 'John',
         lastName: 'Doe',
       },
-      fullName: 'John Doe',
     },
+    type: User,
   })
+  @HttpCode(HttpStatusCode.Created)
+  @Post()
   createUser(
     @Body() createUserRequestDto: CreateUserRequestDto,
   ): Promise<User> {

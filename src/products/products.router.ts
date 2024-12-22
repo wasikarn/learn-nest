@@ -27,8 +27,8 @@ export class ProductsRouter {
 
   @Mutation({
     input: z.object({
-      id: z.string(),
       data: productDtoSchema.partial(),
+      id: z.string(),
     }),
     output: productDtoSchema,
   })

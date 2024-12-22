@@ -17,13 +17,13 @@ export class LoggerMiddleware implements TRPCMiddleware {
     const { req, res } = opts.ctx;
     const result = await next();
     const meta = {
-      path,
-      type,
       durationMS: Date.now() - start,
-      method: req.method,
-      statusCode: res.statusCode,
-      ip: req.ip,
       headers: req.headers,
+      ip: req.ip,
+      method: req.method,
+      path,
+      statusCode: res.statusCode,
+      type,
     };
 
     if (result.ok) {

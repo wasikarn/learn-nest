@@ -2,7 +2,7 @@ import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import { Transform, TransformFnParams } from 'class-transformer';
 import { IsString, Length } from 'class-validator';
 
-@ApiSchema({ name: 'NameRequest', description: 'Name request' })
+@ApiSchema({ description: 'Name request', name: 'NameRequest' })
 export class NameRequestDto {
   @ApiProperty({ example: 'John' })
   @IsString()

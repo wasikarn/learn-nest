@@ -20,8 +20,8 @@ export class ProductsService {
 
     if (!product) {
       throw new TRPCError({
-        message: 'Product not found',
         code: 'NOT_FOUND',
+        message: 'Product not found',
       });
     }
 
@@ -39,8 +39,8 @@ export class ProductsService {
 
     if (productIndex === -1) {
       throw new TRPCError({
-        message: 'Product not found',
         code: 'NOT_FOUND',
+        message: 'Product not found',
       });
     }
 

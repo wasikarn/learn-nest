@@ -12,12 +12,12 @@ describe('UserController', () => {
 
   beforeEach(async () => {
     userServiceMock = {
-      findAll: jest
-        .fn()
-        .mockResolvedValue([{ name: { firstName: 'John', lastName: 'Doe' } }]),
       createUser: jest
         .fn()
         .mockResolvedValue({ name: { firstName: 'Jane', lastName: 'Smith' } }),
+      findAll: jest
+        .fn()
+        .mockResolvedValue([{ name: { firstName: 'John', lastName: 'Doe' } }]),
     };
 
     const module: TestingModule = await Test.createTestingModule({

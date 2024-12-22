@@ -3,7 +3,7 @@ import { Type } from 'class-transformer';
 
 import { NameRequestDto } from './name.request.dto';
 
-@ApiSchema({ name: 'CreateUserRequest', description: 'Create user request' })
+@ApiSchema({ description: 'Create user request', name: 'CreateUserRequest' })
 export class CreateUserRequestDto {
   @ApiProperty()
   @Type((): typeof NameRequestDto => NameRequestDto)

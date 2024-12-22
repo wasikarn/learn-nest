@@ -19,6 +19,7 @@ const setupMainApiDocumentation: (app: INestApplication) => void = (
 
   SwaggerModule.setup('api', app, document, {
     explorer: true,
+    jsonDocumentUrl: '/api/swagger.json',
     swaggerOptions: {
       urls: [
         {
@@ -35,7 +36,6 @@ const setupMainApiDocumentation: (app: INestApplication) => void = (
         },
       ],
     },
-    jsonDocumentUrl: '/api/swagger.json',
   });
 };
 

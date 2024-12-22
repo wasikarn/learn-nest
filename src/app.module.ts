@@ -13,11 +13,11 @@ import { UsersModule } from './users/users.module';
 const loggerConfig: Params = {
   pinoHttp: {
     transport: {
-      target: 'pino-pretty',
       options: {
         colorize: true,
         singleLine: true,
       },
+      target: 'pino-pretty',
     },
   },
 };
