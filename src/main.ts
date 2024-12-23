@@ -1,6 +1,7 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
+import compression from 'compression';
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 
 import { AppModule } from './app.module';
@@ -17,6 +18,7 @@ async function bootstrap(): Promise<void> {
 
   const httpAdapterHost: HttpAdapterHost = app.get(HttpAdapterHost);
 
+  app.use(compression());
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useGlobalFilters(
     new CatchEverythingFilter(httpAdapterHost),

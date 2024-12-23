@@ -1,5 +1,8 @@
+import { BullModule } from '@nestjs/bullmq';
+import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MongooseModule } from '@nestjs/mongoose';
 import { LoggerModule, Params } from 'nestjs-pino';
 
@@ -26,7 +29,15 @@ const loggerConfig: Params = {
   controllers: [],
   imports: [
     PostModule,
+    BullModule.forRoot({
+      connection: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
+    CacheModule.register(),
     ConfigModule.forRoot(configOptions),
+    EventEmitterModule.forRoot(),
     MongooseModule.forRootAsync({ useClass: MongooseConfigService }),
     UsersModule,
     TrpcModule,
