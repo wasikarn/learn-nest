@@ -12,6 +12,7 @@ import { PostModule } from './post/post.module';
 import { ProductsModule } from './products/products.module';
 import { TrpcModule } from './trpc/trpc.module';
 import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 const loggerConfig: Params = {
   pinoHttp: {
@@ -43,6 +44,7 @@ const loggerConfig: Params = {
     TrpcModule,
     ProductsModule,
     LoggerModule.forRoot(loggerConfig),
+    AuthModule,
   ],
   providers: [],
 })
