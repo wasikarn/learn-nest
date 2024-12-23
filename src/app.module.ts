@@ -1,18 +1,17 @@
 import { BullModule } from '@nestjs/bullmq';
-import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MongooseModule } from '@nestjs/mongoose';
 import { LoggerModule, Params } from 'nestjs-pino';
 
+import { AuthModule } from './auth/auth.module';
 import { configOptions } from './config/env.validation';
 import { MongooseConfigService } from './config/mongoose-config.service';
 import { PostModule } from './post/post.module';
 import { ProductsModule } from './products/products.module';
 import { TrpcModule } from './trpc/trpc.module';
 import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module';
 
 const loggerConfig: Params = {
   pinoHttp: {
@@ -36,7 +35,6 @@ const loggerConfig: Params = {
         port: 6379,
       },
     }),
-    CacheModule.register(),
     ConfigModule.forRoot(configOptions),
     EventEmitterModule.forRoot(),
     MongooseModule.forRootAsync({ useClass: MongooseConfigService }),

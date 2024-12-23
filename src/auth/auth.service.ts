@@ -1,32 +1,21 @@
-import {
-  Injectable,
-  NotFoundException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 
 import { User } from '../users/user.schema';
+import { UserService } from '../users/user.service';
 
 @Injectable()
 export class AuthService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(private readonly userService: UserService) {}
 
-  async validateUser(username: string, password: string): Promise<User> {
-    const user: null | User = await this.userModel
-      .findOne({
-        username,
-      })
-      .exec();
+  async validateUser(username: string, pass: string): Promise<User> {
+    const user: User = await this.userService.findOne(username);
 
-    if (!user) {
-      throw new NotFoundException(`User with username ${username} not found`);
+    if (user?.password !== pass) {
+      throw new UnauthorizedException(`Invalid password`);
     }
 
-    if (user.password !== password) {
-      throw new UnprocessableEntityException(`Invalid password`);
-    }
+    const { ...result } = user;
 
-    return user;
+    return result;
   }
 }
