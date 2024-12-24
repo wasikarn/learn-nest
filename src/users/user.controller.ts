@@ -1,7 +1,16 @@
-import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { HttpStatusCode } from 'axios';
 
+import { CurrentUser } from '../auth/current-user.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateUserRequest } from './dto/request/create-user.request';
 import { User } from './user.schema';
 import { UserService } from './user.service';
@@ -17,7 +26,10 @@ export class UserController {
   })
   @Get()
   @HttpCode(HttpStatusCode.Ok)
-  public async getUsers(): Promise<User[]> {
+  @UseGuards(JwtAuthGuard)
+  public async getUsers(@CurrentUser() user: User): Promise<User[]> {
+    console.log(user);
+
     return this.userService.findAll();
   }
 
