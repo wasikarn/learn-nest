@@ -9,8 +9,6 @@ import { AuthModule } from './auth/auth.module';
 import { configOptions } from './config/env.validation';
 import { MongooseConfigService } from './config/mongoose-config.service';
 import { PostModule } from './post/post.module';
-import { ProductsModule } from './products/products.module';
-import { TrpcModule } from './trpc/trpc.module';
 import { UsersModule } from './users/users.module';
 
 const loggerConfig: Params = {
@@ -39,8 +37,6 @@ const loggerConfig: Params = {
     EventEmitterModule.forRoot(),
     MongooseModule.forRootAsync({ useClass: MongooseConfigService }),
     UsersModule,
-    TrpcModule,
-    ProductsModule,
     LoggerModule.forRoot(loggerConfig),
     AuthModule,
   ],
