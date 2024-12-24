@@ -4,6 +4,14 @@ import { SafeParseReturnType, z } from 'zod';
 export type EnvSchemaType = z.infer<typeof envValidation>;
 
 export const envValidation = z.object({
+  JWT_ACCESS_TOKEN_EXPIRATION_MS: z
+    .string({
+      required_error: 'JWT_ACCESS_TOKEN_EXPIRATION_MS is required',
+    })
+    .transform(Number),
+  JWT_ACCESS_TOKEN_SECRET: z.string({
+    required_error: 'JWT_SECRET is required',
+  }),
   MONGODB_URI: z.string({
     required_error: 'MONGODB_URI is required',
   }),

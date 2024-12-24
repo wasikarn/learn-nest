@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { hash } from 'bcryptjs';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 
 import { CreateUserRequest } from './dto/request/create-user.request';
 import { User } from './user.schema';
@@ -25,11 +25,13 @@ export class UserService {
     return this.userModel.find().exec();
   }
 
-  async findOne(id: string): Promise<User> {
-    const user: null | User = await this.userModel.findOne({ _id: id }).exec();
+  async getUser(query: FilterQuery<User>): Promise<User> {
+    const user: undefined | User = (
+      await this.userModel.findOne(query)
+    )?.toObject<User>();
 
     if (!user) {
-      throw new NotFoundException(`User with id ${id} not found`);
+      throw new NotFoundException('User not found');
     }
 
     return user;
