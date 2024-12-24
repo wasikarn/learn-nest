@@ -1,16 +1,22 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { hash } from 'bcryptjs';
 import { Model } from 'mongoose';
 
-import { CreateUserRequestDto } from './dto/request/create-user.request.dto';
+import { CreateUserRequest } from './dto/request/create-user.request';
 import { User } from './user.schema';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(
+    @InjectModel(User.name) private readonly userModel: Model<User>,
+  ) {}
 
-  async createUser(createUserRequestDto: CreateUserRequestDto): Promise<User> {
-    const createdUser = new this.userModel(createUserRequestDto);
+  async createUser(request: CreateUserRequest): Promise<User> {
+    const createdUser = new this.userModel({
+      email: request.email,
+      password: await hash(request.password, 10),
+    });
 
     return createdUser.save();
   }

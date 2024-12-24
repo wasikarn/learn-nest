@@ -1,34 +1,16 @@
-import { Prop, Schema, SchemaFactory, Virtual } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
-
-import { Name, NameSchema } from './name.schema';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { SchemaTypes, Types } from 'mongoose';
 
 @Schema({ collection: 'users' })
 export class User {
-  @Virtual({
-    get: function (this: User): string {
-      return `${this.name.firstName} ${this.name.lastName}`;
-    },
-  })
-  fullName: string;
+  @Prop({ auto: true, type: SchemaTypes.ObjectId })
+  _id: Types.ObjectId;
 
-  @Prop(NameSchema)
-  name: Name;
-
-  @Prop({ default: true })
-  isActive: boolean;
-
-  @Prop()
-  username: string;
+  @Prop({ unique: true })
+  email: string;
 
   @Prop()
   password: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
-
-export type UserDocument = HydratedDocument<User & UserDocumentOverride>;
-
-export interface UserDocumentOverride {
-  name: Types.Subdocument<Name & Types.ObjectId>;
-}

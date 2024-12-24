@@ -2,7 +2,7 @@ import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { HttpStatusCode } from 'axios';
 
-import { CreateUserRequestDto } from './dto/request/create-user.request.dto';
+import { CreateUserRequest } from './dto/request/create-user.request';
 import { User } from './user.schema';
 import { UserService } from './user.service';
 
@@ -24,19 +24,14 @@ export class UserController {
   @ApiCreatedResponse({
     description: 'The record has been successfully created.',
     example: {
-      fullName: 'John Doe',
-      name: {
-        firstName: 'John',
-        lastName: 'Doe',
-      },
+      email: 'email@email.com',
+      password: 'your-strong-password',
     },
     type: User,
   })
   @HttpCode(HttpStatusCode.Created)
   @Post()
-  createUser(
-    @Body() createUserRequestDto: CreateUserRequestDto,
-  ): Promise<User> {
-    return this.userService.createUser(createUserRequestDto);
+  createUser(@Body() request: CreateUserRequest): Promise<User> {
+    return this.userService.createUser(request);
   }
 }

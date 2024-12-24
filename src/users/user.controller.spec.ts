@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { PaginatedDto } from '../common/paginated.dto';
-import { CreateUserRequestDto } from './dto/request/create-user.request.dto';
+import { CreateUserRequest } from './dto/request/create-user.request';
 import { UserController } from './user.controller';
 import { User } from './user.schema';
 import { UserService } from './user.service';
@@ -45,7 +45,7 @@ describe('UserController', () => {
 
   describe('createUser', () => {
     it('should create a user and return it', async () => {
-      const createUserRequestDto: CreateUserRequestDto = {
+      const createUserRequestDto: CreateUserRequest = {
         name: { firstName: 'Jane', lastName: 'Smith' },
       };
 
