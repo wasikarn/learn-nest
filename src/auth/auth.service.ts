@@ -2,10 +2,10 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcryptjs';
-import { Response } from 'express';
 
 import { User } from '../users/user.schema';
 import { UserService } from '../users/user.service';
+import { LoginResponse } from './login-response.interface';
 import { TokenPayload } from './token-payload.interface';
 
 @Injectable()
@@ -16,32 +16,31 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async login(user: User, response: Response) {
+  async login(user: User): Promise<LoginResponse> {
     const expiresAccessToken = new Date();
 
-    expiresAccessToken.setMilliseconds(
-      expiresAccessToken.getTime() +
-        parseInt(
-          this.configService.getOrThrow<string>(
-            'JWT_ACCESS_TOKEN_EXPIRATION_MS',
-          ),
-        ),
+    const jwtExpirationMs: string = this.configService.getOrThrow<string>(
+      'JWT_ACCESS_TOKEN_EXPIRATION_MS',
     );
 
-    const tokenPayload: TokenPayload = { userId: user._id.toHexString() };
+    expiresAccessToken.setMilliseconds(
+      expiresAccessToken.getTime() + parseInt(jwtExpirationMs),
+    );
+
+    const tokenPayload: TokenPayload = {
+      email: user.email,
+      sub: user._id.toHexString(),
+    };
 
     const accessToken: string = this.jwtService.sign(tokenPayload, {
-      expiresIn: `${this.configService.getOrThrow<string>(
-        'JWT_ACCESS_TOKEN_EXPIRATION_MS',
-      )}ms`,
+      expiresIn: `${jwtExpirationMs}ms`,
       secret: this.configService.getOrThrow<string>('JWT_ACCESS_TOKEN_SECRET'),
     });
 
-    response.cookie('Authentication', accessToken, {
-      expires: expiresAccessToken,
-      httpOnly: true,
-      secure: this.configService.getOrThrow('NODE_ENV') === 'production',
-    });
+    return {
+      access_token: accessToken,
+      expires_in: parseInt(jwtExpirationMs),
+    };
   }
 
   async verifyUser(email: string, password: string): Promise<User> {
