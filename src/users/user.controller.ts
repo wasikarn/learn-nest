@@ -9,7 +9,6 @@ import {
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { HttpStatusCode } from 'axios';
 
-import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateUserRequest } from './dto/request/create-user.request';
 import { User } from './user.schema';
@@ -27,9 +26,7 @@ export class UserController {
   @Get()
   @HttpCode(HttpStatusCode.Ok)
   @UseGuards(JwtAuthGuard)
-  public async getUsers(@CurrentUser() user: User): Promise<User[]> {
-    console.log(user);
-
+  public async getUsers(): Promise<User[]> {
     return this.userService.findAll();
   }
 
