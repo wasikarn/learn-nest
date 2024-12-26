@@ -61,9 +61,9 @@ export class AuthService {
     };
   }
 
-  async verifyUser(email: string, password: string): Promise<User> {
+  async verifyUser(email: string, password: string): Promise<UserDocument> {
     try {
-      const user: User = await this.userService.getUser({ email });
+      const user: UserDocument = await this.userService.getUser({ email });
 
       await this.verifyPassword(password, user.password);
 

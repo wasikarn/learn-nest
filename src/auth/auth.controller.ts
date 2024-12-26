@@ -1,5 +1,5 @@
 import { Controller, HttpCode, Post, Req, UseGuards } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiNoContentResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { HttpStatusCode } from 'axios';
 import { Request } from 'express';
 
@@ -16,7 +16,9 @@ import { LoginResponse } from './interfaces/login-response.interface';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @ApiOkResponse()
+  @ApiOkResponse({
+    description: 'Login successful.',
+  })
   @HttpCode(HttpStatusCode.Ok)
   @Post('login')
   @UseGuards(LocalAuthGuard)
@@ -24,7 +26,9 @@ export class AuthController {
     return this.authService.login(user);
   }
 
-  @ApiOkResponse()
+  @ApiOkResponse({
+    description: 'Refresh token successful.',
+  })
   @HttpCode(HttpStatusCode.Ok)
   @Post('refresh')
   @UseGuards(JwtRefreshAuthGuard)
@@ -32,6 +36,9 @@ export class AuthController {
     return this.authService.login(user);
   }
 
+  @ApiNoContentResponse({
+    description: 'Logout successful.',
+  })
   @Post('logout')
   @UseGuards(JwtAuthGuard)
   async logout(@Req() req: Request): Promise<void> {
