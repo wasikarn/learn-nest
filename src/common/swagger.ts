@@ -4,18 +4,24 @@ import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { PostModule } from '../post/post.module';
 import { UsersModule } from '../users/users.module';
 
+// API options
+const options: DocumentBuilder = new DocumentBuilder().addBearerAuth();
+
 const setupMainApiDocumentation: (app: INestApplication) => void = (
   app: INestApplication,
 ): void => {
   // Main API options
-  const options = new DocumentBuilder()
+  const mainOptions: Omit<OpenAPIObject, 'paths'> = options
     .setTitle('Main API')
     .setDescription('The Main API description')
     .setVersion('1.0')
     .build();
 
   // Create the main API document
-  const document = SwaggerModule.createDocument(app, options);
+  const document: OpenAPIObject = SwaggerModule.createDocument(
+    app,
+    mainOptions,
+  );
 
   SwaggerModule.setup('api', app, document, {
     explorer: true,
@@ -42,7 +48,7 @@ const setupMainApiDocumentation: (app: INestApplication) => void = (
 const setupUsersApiDocumentation: (app: INestApplication) => void = (
   app: INestApplication,
 ): void => {
-  const usersApiOptions: Omit<OpenAPIObject, 'paths'> = new DocumentBuilder()
+  const usersApiOptions: Omit<OpenAPIObject, 'paths'> = options
     .setTitle('Users API')
     .setDescription('The Users API description')
     .setVersion('1.0')
@@ -61,7 +67,7 @@ const setupUsersApiDocumentation: (app: INestApplication) => void = (
 const setupPostsApiDocumentation: (app: INestApplication) => void = (
   app: INestApplication,
 ): void => {
-  const postApiOptions: Omit<OpenAPIObject, 'paths'> = new DocumentBuilder()
+  const postApiOptions: Omit<OpenAPIObject, 'paths'> = options
     .setTitle('Posts API')
     .setDescription('The Post API description')
     .setVersion('1.0')

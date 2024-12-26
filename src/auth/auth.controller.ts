@@ -1,5 +1,5 @@
 import { Controller, Get, HttpCode, Post, UseGuards } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { HttpStatusCode } from 'axios';
 
 import { User, UserDocument } from '../users/user.schema';
@@ -35,6 +35,7 @@ export class AuthController {
     return this.authService.login(user);
   }
 
+  @ApiBearerAuth()
   @ApiOkResponse({
     description: 'Logout successful.',
   })
