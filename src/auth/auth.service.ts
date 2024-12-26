@@ -17,23 +17,18 @@ export class AuthService {
   ) {}
 
   async login(user: User): Promise<LoginResponse> {
-    const accessTokenExpirationMs: number = parseInt(
-      this.configService.getOrThrow<string>('JWT_ACCESS_TOKEN_EXPIRATION_MS'),
+    const accessTokenExpirationMs: number = this.getConfigInt(
+      'JWT_ACCESS_TOKEN_EXPIRATION_KEY',
     );
-    const refreshTokenExpirationMs: number = parseInt(
-      this.configService.getOrThrow<string>('JWT_REFRESH_TOKEN_EXPIRATION_MS'),
-    );
-
-    const expiresAccessToken = new Date();
-
-    expiresAccessToken.setMilliseconds(
-      expiresAccessToken.getMilliseconds() + accessTokenExpirationMs,
+    const refreshTokenExpirationMs: number = this.getConfigInt(
+      'JWT_REFRESH_TOKEN_EXPIRATION_MS',
     );
 
-    const expiresRefreshToken = new Date();
-
-    expiresRefreshToken.setMilliseconds(
-      expiresRefreshToken.getMilliseconds() + refreshTokenExpirationMs,
+    const accessTokenExpiryDate: Date = this.calculateExpiry(
+      accessTokenExpirationMs,
+    );
+    const refreshTokenExpiryDate: Date = this.calculateExpiry(
+      refreshTokenExpirationMs,
     );
 
     const tokenPayload: TokenPayload = {
@@ -41,24 +36,26 @@ export class AuthService {
       sub: user._id.toHexString(),
     };
 
-    const accessToken: string = this.jwtService.sign(tokenPayload, {
-      expiresIn: `${accessTokenExpirationMs}ms`,
-      secret: this.configService.getOrThrow<string>('JWT_ACCESS_TOKEN_SECRET'),
-    });
-    const refreshToken = this.jwtService.sign(tokenPayload, {
-      expiresIn: `${refreshTokenExpirationMs}ms`,
-      secret: this.configService.getOrThrow<string>('JWT_REFRESH_TOKEN_SECRET'),
-    });
+    const accessToken: string = this.generateToken(
+      tokenPayload,
+      accessTokenExpirationMs,
+      'JWT_ACCESS_TOKEN_SECRET',
+    );
+    const refreshToken: string = this.generateToken(
+      tokenPayload,
+      refreshTokenExpirationMs,
+      'JWT_REFRESH_TOKEN_SECRET',
+    );
 
     await this.setUserRefreshToken(user, refreshToken);
 
     return {
       access_token: {
-        expires: expiresAccessToken,
+        expires: accessTokenExpiryDate,
         token: accessToken,
       },
       refresh_token: {
-        expires: expiresRefreshToken,
+        expires: refreshTokenExpiryDate,
         token: refreshToken,
       },
     };
@@ -97,23 +94,25 @@ export class AuthService {
     user: User,
     refreshToken: string,
   ): Promise<void> {
+    const hashedToken: string = await hash(refreshToken, 10);
+
     await this.userService.updateUser(
       { _id: user._id },
-      { $set: { refreshToken: await hash(refreshToken, 10) } },
+      { $set: { refreshToken: hashedToken } },
     );
   }
 
   private async verifyPassword(
     password: string,
-    hash: string,
+    hashedPassword: string,
   ): Promise<boolean> {
-    const authenticated: boolean = await compare(password, hash);
+    const isAuthenticated: boolean = await compare(password, hashedPassword);
 
-    if (!authenticated) {
+    if (!isAuthenticated) {
       throw new UnauthorizedException('Credentials are invalid');
     }
 
-    return authenticated;
+    return isAuthenticated;
   }
 
   private async verifyRefreshToken(
@@ -124,15 +123,38 @@ export class AuthService {
       throw new UnauthorizedException('User has no refresh token');
     }
 
-    const authenticated: boolean = await compare(
+    const isTokenValid: boolean = await compare(
       refreshToken,
       user.refreshToken,
     );
 
-    if (!authenticated) {
+    if (!isTokenValid) {
       throw new UnauthorizedException('Refresh token is invalid');
     }
 
-    return authenticated;
+    return isTokenValid;
+  }
+
+  private calculateExpiry(expiryMs: number): Date {
+    const expirationDate: Date = new Date();
+
+    expirationDate.setMilliseconds(expirationDate.getMilliseconds() + expiryMs);
+
+    return expirationDate;
+  }
+
+  private generateToken(
+    payload: TokenPayload,
+    expiryMs: number,
+    secretKey: string,
+  ): string {
+    return this.jwtService.sign(payload, {
+      expiresIn: `${expiryMs}ms`,
+      secret: this.configService.getOrThrow<string>(secretKey),
+    });
+  }
+
+  private getConfigInt(key: string): number {
+    return parseInt(this.configService.getOrThrow<string>(key), 10);
   }
 }
