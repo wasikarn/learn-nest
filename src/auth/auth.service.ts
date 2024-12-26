@@ -1,12 +1,12 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { compare } from 'bcryptjs';
+import { compare, hash } from 'bcryptjs';
 
-import { User } from '../users/user.schema';
+import { User, UserDocument } from '../users/user.schema';
 import { UserService } from '../users/user.service';
-import { LoginResponse } from './login-response.interface';
-import { TokenPayload } from './token-payload.interface';
+import { LoginResponse } from './interfaces/login-response.interface';
+import { TokenPayload } from './interfaces/token-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -17,14 +17,23 @@ export class AuthService {
   ) {}
 
   async login(user: User): Promise<LoginResponse> {
-    const expiresAccessToken = new Date();
-
-    const jwtExpirationMs: string = this.configService.getOrThrow<string>(
-      'JWT_ACCESS_TOKEN_EXPIRATION_MS',
+    const accessTokenExpirationMs: number = parseInt(
+      this.configService.getOrThrow<string>('JWT_ACCESS_TOKEN_EXPIRATION_MS'),
+    );
+    const refreshTokenExpirationMs: number = parseInt(
+      this.configService.getOrThrow<string>('JWT_REFRESH_TOKEN_EXPIRATION_MS'),
     );
 
+    const expiresAccessToken = new Date();
+
     expiresAccessToken.setMilliseconds(
-      expiresAccessToken.getTime() + parseInt(jwtExpirationMs),
+      expiresAccessToken.getMilliseconds() + accessTokenExpirationMs,
+    );
+
+    const expiresRefreshToken = new Date();
+
+    expiresRefreshToken.setMilliseconds(
+      expiresRefreshToken.getMilliseconds() + refreshTokenExpirationMs,
     );
 
     const tokenPayload: TokenPayload = {
@@ -33,13 +42,25 @@ export class AuthService {
     };
 
     const accessToken: string = this.jwtService.sign(tokenPayload, {
-      expiresIn: `${jwtExpirationMs}ms`,
+      expiresIn: `${accessTokenExpirationMs}ms`,
       secret: this.configService.getOrThrow<string>('JWT_ACCESS_TOKEN_SECRET'),
     });
+    const refreshToken = this.jwtService.sign(tokenPayload, {
+      expiresIn: `${refreshTokenExpirationMs}ms`,
+      secret: this.configService.getOrThrow<string>('JWT_REFRESH_TOKEN_SECRET'),
+    });
+
+    await this.setUserRefreshToken(user, refreshToken);
 
     return {
-      access_token: accessToken,
-      expires_in: parseInt(jwtExpirationMs),
+      access_token: {
+        expires: expiresAccessToken,
+        token: accessToken,
+      },
+      refresh_token: {
+        expires: expiresRefreshToken,
+        token: refreshToken,
+      },
     };
   }
 
@@ -55,6 +76,33 @@ export class AuthService {
     }
   }
 
+  async verifyUserRefreshToken(
+    refreshToken: string,
+    userId: string,
+  ): Promise<UserDocument> {
+    try {
+      const user: UserDocument = await this.userService.getUser({
+        _id: userId,
+      });
+
+      await this.verifyRefreshToken(refreshToken, user);
+
+      return user;
+    } catch (e) {
+      throw new UnauthorizedException(e);
+    }
+  }
+
+  private async setUserRefreshToken(
+    user: User,
+    refreshToken: string,
+  ): Promise<void> {
+    await this.userService.updateUser(
+      { _id: user._id },
+      { $set: { refreshToken: await hash(refreshToken, 10) } },
+    );
+  }
+
   private async verifyPassword(
     password: string,
     hash: string,
@@ -63,6 +111,26 @@ export class AuthService {
 
     if (!authenticated) {
       throw new UnauthorizedException('Credentials are invalid');
+    }
+
+    return authenticated;
+  }
+
+  private async verifyRefreshToken(
+    refreshToken: string,
+    user: User,
+  ): Promise<boolean> {
+    if (!user.refreshToken) {
+      throw new UnauthorizedException('User has no refresh token');
+    }
+
+    const authenticated: boolean = await compare(
+      refreshToken,
+      user.refreshToken,
+    );
+
+    if (!authenticated) {
+      throw new UnauthorizedException('Refresh token is invalid');
     }
 
     return authenticated;

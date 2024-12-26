@@ -11,7 +11,7 @@ import { HttpStatusCode } from 'axios';
 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateUserRequest } from './dto/request/create-user.request';
-import { User } from './user.schema';
+import { User, UserDocument } from './user.schema';
 import { UserService } from './user.service';
 
 @ApiTags('users')
@@ -26,7 +26,7 @@ export class UserController {
   @Get()
   @HttpCode(HttpStatusCode.Ok)
   @UseGuards(JwtAuthGuard)
-  public async getUsers(): Promise<User[]> {
+  public async getUsers(): Promise<UserDocument[]> {
     return this.userService.findAll();
   }
 
@@ -40,7 +40,7 @@ export class UserController {
   })
   @HttpCode(HttpStatusCode.Created)
   @Post()
-  createUser(@Body() request: CreateUserRequest): Promise<User> {
+  createUser(@Body() request: CreateUserRequest): Promise<UserDocument> {
     return this.userService.createUser(request);
   }
 }
