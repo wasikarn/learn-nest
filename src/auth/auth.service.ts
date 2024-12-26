@@ -90,6 +90,13 @@ export class AuthService {
     }
   }
 
+  async logout(userId: string): Promise<UserDocument> {
+    return this.userService.updateUser(
+      { _id: userId },
+      { $set: { refreshToken: null } },
+    );
+  }
+
   private async setUserRefreshToken(
     user: User,
     refreshToken: string,

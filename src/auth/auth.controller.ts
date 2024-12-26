@@ -1,9 +1,8 @@
-import { Controller, HttpCode, Post, Req, UseGuards } from '@nestjs/common';
-import { ApiNoContentResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, HttpCode, Post, UseGuards } from '@nestjs/common';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { HttpStatusCode } from 'axios';
-import { Request } from 'express';
 
-import { User } from '../users/user.schema';
+import { User, UserDocument } from '../users/user.schema';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './current-user.decorator';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -36,16 +35,13 @@ export class AuthController {
     return this.authService.login(user);
   }
 
-  @ApiNoContentResponse({
+  @ApiOkResponse({
     description: 'Logout successful.',
   })
-  @Post('logout')
+  @Get('logout')
+  @HttpCode(HttpStatusCode.Ok)
   @UseGuards(JwtAuthGuard)
-  async logout(@Req() req: Request): Promise<void> {
-    return req.logout((err): void => {
-      if (err) {
-        throw err;
-      }
-    });
+  async logout(@CurrentUser() user: User): Promise<UserDocument> {
+    return this.authService.logout(user._id.toHexString());
   }
 }
