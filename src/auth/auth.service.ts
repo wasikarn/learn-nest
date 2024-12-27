@@ -18,7 +18,7 @@ export class AuthService {
 
   async login(user: User): Promise<LoginResponse> {
     const accessTokenExpirationMs: number = this.getConfigInt(
-      'JWT_ACCESS_TOKEN_EXPIRATION_KEY',
+      'JWT_ACCESS_TOKEN_EXPIRATION_MS',
     );
     const refreshTokenExpirationMs: number = this.getConfigInt(
       'JWT_REFRESH_TOKEN_EXPIRATION_MS',

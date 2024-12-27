@@ -1,5 +1,11 @@
 import { Controller, Get, HttpCode, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOkResponse,
+  ApiProperty,
+  ApiTags,
+} from '@nestjs/swagger';
 import { HttpStatusCode } from 'axios';
 
 import { User, UserDocument } from '../users/user.schema';
@@ -15,8 +21,23 @@ import { LoginResponse } from './interfaces/login-response.interface';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @ApiBody({
+    schema: {
+      properties: {
+        email: { example: 'email@example.com', type: 'string' },
+        password: { example: 'pybtez-naskoB-8fizmi', type: 'string' },
+      },
+      type: 'object',
+    },
+  })
   @ApiOkResponse({
     description: 'Login successful.',
+  })
+  @ApiProperty({
+    example: {
+      email: 'email@example.com',
+      password: 'pybtez-naskoB-8fizmi',
+    },
   })
   @HttpCode(HttpStatusCode.Ok)
   @Post('login')
@@ -25,6 +46,7 @@ export class AuthController {
     return this.authService.login(user);
   }
 
+  @ApiBearerAuth()
   @ApiOkResponse({
     description: 'Refresh token successful.',
   })

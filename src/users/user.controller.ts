@@ -6,7 +6,12 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { HttpStatusCode } from 'axios';
 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -19,6 +24,7 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @ApiBearerAuth()
   @ApiOkResponse({
     description: 'The records have been successfully retrieved.',
     type: [User],
@@ -30,13 +36,9 @@ export class UserController {
     return this.userService.findAll();
   }
 
+  @ApiBearerAuth()
   @ApiCreatedResponse({
     description: 'The record has been successfully created.',
-    example: {
-      email: 'email@email.com',
-      password: 'your-strong-password',
-    },
-    type: User,
   })
   @HttpCode(HttpStatusCode.Created)
   @Post()
