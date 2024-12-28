@@ -1,7 +1,10 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import { IsString, IsStrongPassword } from 'class-validator';
 
+@ApiSchema({ description: 'Create user request', name: 'CreateUserDto' })
 export class CreateUserDto {
+  @ApiProperty({ example: 'username' })
+  @IsString({ message: 'Username must be a string' })
   username: string;
 
   @ApiProperty({ example: 'email@example.com' })
@@ -20,6 +23,4 @@ export class CreateUserDto {
     { message: 'Password must be strong' },
   )
   password: string;
-
-  refreshToken?: null | string;
 }
