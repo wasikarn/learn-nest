@@ -1,4 +1,11 @@
-import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -14,6 +21,8 @@ import { UserDocument } from '../users/user.schema';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './current-user.decorator';
 import { AuthDto } from './dto/auth.dto';
+import { AccessTokenGuard } from './guards/access-token.guard';
+import { RefreshTokenGuard } from './guards/refresh-token.guard';
 import { AuthTokens } from './interfaces/auth-token.interface';
 
 @ApiTags('auth')
@@ -40,11 +49,26 @@ export class AuthController {
   }
 
   @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'User has been successfully refreshed token.',
+  })
+  @Get('refresh')
+  @HttpCode(HttpStatusCode.Ok)
+  @UseGuards(RefreshTokenGuard)
+  refreshTokens(@CurrentUser() user: UserDocument): Promise<AuthTokens> {
+    const userId: string = user._id.toString();
+    const refreshToken: string = user.refreshToken as string;
+
+    return this.authService.refreshTokens(userId, refreshToken);
+  }
+
+  @ApiBearerAuth()
   @ApiNoContentResponse({
     description: 'User has been successfully logged out.',
   })
   @Get('logout')
   @HttpCode(HttpStatusCode.NoContent)
+  @UseGuards(AccessTokenGuard)
   async logout(@CurrentUser() user: UserDocument): Promise<void> {
     await this.authService.logout(user._id.toString());
   }

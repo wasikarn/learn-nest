@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -58,6 +59,28 @@ export class AuthService {
     await this.verifyPassword(authDto.password, user.password);
 
     const userId: string = user._id.toString();
+    const tokenPayload: JwtPayload = { sub: userId, username: user.username };
+
+    // Generate tokens
+    const tokens: AuthTokens = this.generateTokens(tokenPayload);
+
+    await this.updateRefreshToken(userId, tokens.refreshToken.token);
+
+    return tokens;
+  }
+
+  async refreshTokens(
+    userId: string,
+    refreshToken: string,
+  ): Promise<AuthTokens> {
+    const user: UserDocument = await this.userService.findById(userId);
+
+    if (!user || !user.refreshToken) {
+      throw new ForbiddenException('Access denied');
+    }
+
+    await this.verifyRefreshToken(refreshToken, user);
+
     const tokenPayload: JwtPayload = { sub: userId, username: user.username };
 
     // Generate tokens
@@ -141,6 +164,26 @@ export class AuthService {
     }
 
     return isAuthenticated;
+  }
+
+  private async verifyRefreshToken(
+    refreshToken: string,
+    user: UserDocument,
+  ): Promise<boolean> {
+    if (!user.refreshToken) {
+      throw new ForbiddenException('Access denied');
+    }
+
+    const isTokenValid: boolean = await compare(
+      refreshToken,
+      user.refreshToken,
+    );
+
+    if (!isTokenValid) {
+      throw new ForbiddenException('Access denied');
+    }
+
+    return isTokenValid;
   }
 
   private calculateExpiry(expiryMs: number): Date {
