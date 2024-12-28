@@ -1,9 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { hash } from 'bcryptjs';
-import { FilterQuery, Model, UpdateQuery } from 'mongoose';
+import { Model } from 'mongoose';
 
-import { CreateUserRequest } from './dto/request/create-user.request';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './user.schema';
 
 @Injectable()
@@ -12,11 +12,8 @@ export class UserService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
 
-  async createUser(request: CreateUserRequest): Promise<UserDocument> {
-    const createdUser = new this.userModel({
-      email: request.email,
-      password: await hash(request.password, 10),
-    });
+  async create(createUserDto: CreateUserDto): Promise<UserDocument> {
+    const createdUser = new this.userModel(createUserDto);
 
     return createdUser.save();
   }
@@ -25,30 +22,24 @@ export class UserService {
     return this.userModel.find().exec();
   }
 
-  async getUser(query: FilterQuery<User>): Promise<UserDocument> {
-    const user: undefined | UserDocument = (
-      await this.userModel.findOne(query).exec()
-    )?.toObject<UserDocument>();
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    return user;
+  async findById(id: string): Promise<null | UserDocument> {
+    return this.userModel.findById(id).exec();
   }
 
-  async updateUser(
-    query: FilterQuery<User>,
-    data: UpdateQuery<User>,
-  ): Promise<UserDocument> {
-    const user: undefined | UserDocument = (
-      await this.userModel.findOneAndUpdate(query, data).exec()
-    )?.toObject<UserDocument>();
+  async findByUsername(username: string): Promise<null | UserDocument> {
+    return this.userModel.findOne({ username }).exec();
+  }
 
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<null | UserDocument> {
+    return this.userModel
+      .findByIdAndUpdate(id, updateUserDto, { new: true })
+      .exec();
+  }
 
-    return user;
+  async remove(id: string): Promise<null | UserDocument> {
+    return this.userModel.findByIdAndDelete(id).exec();
   }
 }
