@@ -2,9 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsStrongPassword } from 'class-validator';
 
 export class CreateUserDto {
-  @ApiProperty({ example: 'John' })
-  @IsString({ message: 'Name must be a string' })
-  name: string;
+  username: string;
 
   @ApiProperty({ example: 'email@example.com' })
   @IsString({ message: 'Email must be a string' })
@@ -23,5 +21,5 @@ export class CreateUserDto {
   )
   password: string;
 
-  refreshToken?: string;
+  refreshToken?: null | string;
 }

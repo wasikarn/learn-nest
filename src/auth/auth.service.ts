@@ -1,12 +1,18 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcryptjs';
 
-import { User, UserDocument } from '../users/user.schema';
+import { CreateUserDto } from '../users/dto/create-user.dto';
+import { UserDocument } from '../users/user.schema';
 import { UserService } from '../users/user.service';
-import { LoginResponse } from './interfaces/login-response.interface';
-import { TokenPayload } from './interfaces/token-payload.interface';
+import { AuthDto } from './dto/auth.dto';
+import { AuthTokens } from './interfaces/auth-token.interface';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -16,54 +22,60 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async login(user: User): Promise<LoginResponse> {
-    const accessTokenExpirationMs: number = this.getConfigInt(
-      'JWT_ACCESS_TOKEN_EXPIRATION_MS',
-    );
-    const refreshTokenExpirationMs: number = this.getConfigInt(
-      'JWT_REFRESH_TOKEN_EXPIRATION_MS',
+  async signUp(createUserDto: CreateUserDto) {
+    // Check if user exists
+    const userExists: UserDocument = await this.userService.findByUsername(
+      createUserDto.username,
     );
 
-    const accessTokenExpiryDate: Date = this.calculateExpiry(
-      accessTokenExpirationMs,
-    );
-    const refreshTokenExpiryDate: Date = this.calculateExpiry(
-      refreshTokenExpirationMs,
-    );
+    if (userExists) throw new BadRequestException('User already exists');
 
-    const tokenPayload: TokenPayload = {
-      email: user.email,
-      sub: user._id.toHexString(),
-    };
+    // Hash Password
+    const hashedPassword: string = await hash(createUserDto.password, 10);
+    const newUser: UserDocument = await this.userService.create({
+      ...createUserDto,
+      password: hashedPassword,
+    });
+    const createdUserId: string = newUser._id.toString();
+    const tokenPayload = { sub: createdUserId, username: newUser.username };
 
-    const accessToken: string = this.generateToken(
-      tokenPayload,
-      accessTokenExpirationMs,
-      'JWT_ACCESS_TOKEN_SECRET',
-    );
-    const refreshToken: string = this.generateToken(
-      tokenPayload,
-      refreshTokenExpirationMs,
-      'JWT_REFRESH_TOKEN_SECRET',
-    );
+    // Generate tokens
+    const tokens: AuthTokens = this.generateTokens(tokenPayload);
 
-    await this.setUserRefreshToken(user, refreshToken);
+    await this.updateRefreshToken(createdUserId, tokens.refreshToken.token);
 
-    return {
-      access_token: {
-        expires: accessTokenExpiryDate,
-        token: accessToken,
-      },
-      refresh_token: {
-        expires: refreshTokenExpiryDate,
-        token: refreshToken,
-      },
-    };
+    return tokens;
   }
 
-  async verifyUser(email: string, password: string): Promise<UserDocument> {
+  async signIn(authDto: AuthDto) {
+    // Check if user exists
+    const user: UserDocument = await this.userService.findByUsername(
+      authDto.username,
+    );
+
+    if (!user) throw new BadRequestException('User does not exist');
+
+    await this.verifyPassword(authDto.password, user.password);
+
+    const userId: string = user._id.toString();
+    const tokenPayload: JwtPayload = { sub: userId, username: user.username };
+
+    // Generate tokens
+    const tokens: AuthTokens = this.generateTokens(tokenPayload);
+
+    await this.updateRefreshToken(userId, tokens.refreshToken.token);
+
+    return tokens;
+  }
+
+  async logout(userId: string): Promise<UserDocument> {
+    return this.userService.update(userId, { refreshToken: null });
+  }
+
+  async verifyUser(username: string, password: string): Promise<UserDocument> {
     try {
-      const user: UserDocument = await this.userService.getUser({ email });
+      const user: UserDocument =
+        await this.userService.findByUsername(username);
 
       await this.verifyPassword(password, user.password);
 
@@ -73,40 +85,49 @@ export class AuthService {
     }
   }
 
-  async verifyUserRefreshToken(
-    refreshToken: string,
-    userId: string,
-  ): Promise<UserDocument> {
-    try {
-      const user: UserDocument = await this.userService.getUser({
-        _id: userId,
-      });
-
-      await this.verifyRefreshToken(refreshToken, user);
-
-      return user;
-    } catch (e) {
-      throw new UnauthorizedException(e);
-    }
-  }
-
-  async logout(userId: string): Promise<UserDocument> {
-    return this.userService.updateUser(
-      { _id: userId },
-      { $set: { refreshToken: null } },
+  private generateTokens(jwtPayload: JwtPayload): AuthTokens {
+    const accessTokenExpirationMs: number = this.getConfigInt(
+      'JWT_ACCESS_TOKEN_EXPIRATION_MS',
     );
+    const refreshTokenExpirationMs: number = this.getConfigInt(
+      'JWT_REFRESH_TOKEN_EXPIRATION_MS',
+    );
+    const accessTokenExpiryDate: Date = this.calculateExpiry(
+      accessTokenExpirationMs,
+    );
+    const refreshTokenExpiryDate: Date = this.calculateExpiry(
+      refreshTokenExpirationMs,
+    );
+    const accessToken: string = this.generateToken(
+      jwtPayload,
+      accessTokenExpirationMs,
+      'JWT_ACCESS_TOKEN_SECRET',
+    );
+    const refreshToken: string = this.generateToken(
+      jwtPayload,
+      refreshTokenExpirationMs,
+      'JWT_REFRESH_TOKEN_SECRET',
+    );
+
+    return {
+      accessToken: {
+        expires: accessTokenExpiryDate,
+        token: accessToken,
+      },
+      refreshToken: {
+        expires: refreshTokenExpiryDate,
+        token: refreshToken,
+      },
+    };
   }
 
-  private async setUserRefreshToken(
-    user: User,
+  private async updateRefreshToken(
+    userId: string,
     refreshToken: string,
   ): Promise<void> {
-    const hashedToken: string = await hash(refreshToken, 10);
-
-    await this.userService.updateUser(
-      { _id: user._id },
-      { $set: { refreshToken: hashedToken } },
-    );
+    await this.userService.update(userId, {
+      refreshToken: await hash(refreshToken, 10),
+    });
   }
 
   private async verifyPassword(
@@ -122,26 +143,6 @@ export class AuthService {
     return isAuthenticated;
   }
 
-  private async verifyRefreshToken(
-    refreshToken: string,
-    user: User,
-  ): Promise<boolean> {
-    if (!user.refreshToken) {
-      throw new UnauthorizedException('User has no refresh token');
-    }
-
-    const isTokenValid: boolean = await compare(
-      refreshToken,
-      user.refreshToken,
-    );
-
-    if (!isTokenValid) {
-      throw new UnauthorizedException('Refresh token is invalid');
-    }
-
-    return isTokenValid;
-  }
-
   private calculateExpiry(expiryMs: number): Date {
     const expirationDate: Date = new Date();
 
@@ -151,7 +152,7 @@ export class AuthService {
   }
 
   private generateToken(
-    payload: TokenPayload,
+    payload: JwtPayload,
     expiryMs: number,
     secretKey: string,
   ): string {
@@ -162,6 +163,6 @@ export class AuthService {
   }
 
   private getConfigInt(key: string): number {
-    return parseInt(this.configService.getOrThrow<string>(key), 10);
+    return parseInt(this.configService.getOrThrow<string>(key));
   }
 }
