@@ -17,7 +17,7 @@ import {
 } from '@nestjs/swagger';
 import { HttpStatusCode } from 'axios';
 
-import { CreateUserRequest } from './dto/request/create-user.request';
+import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './user.schema';
 import { UserService } from './user.service';
@@ -32,7 +32,7 @@ export class UserController {
   })
   @HttpCode(HttpStatusCode.Created)
   @Post()
-  create(@Body() createUserDto: CreateUserRequest): Promise<UserDocument> {
+  create(@Body() createUserDto: CreateUserDto): Promise<UserDocument> {
     return this.userService.create(createUserDto);
   }
 

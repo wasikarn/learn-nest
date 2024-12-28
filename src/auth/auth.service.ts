@@ -47,7 +47,7 @@ export class AuthService {
     return tokens;
   }
 
-  async signIn(authDto: AuthDto) {
+  async signIn(authDto: AuthDto): Promise<AuthTokens> {
     // Check if user exists
     const user: UserDocument = await this.userService.findByUsername(
       authDto.username,

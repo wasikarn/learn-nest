@@ -1,70 +1,30 @@
-import { Controller, Get, HttpCode, Post, UseGuards } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiOkResponse,
-  ApiProperty,
-  ApiTags,
-} from '@nestjs/swagger';
-import { HttpStatusCode } from 'axios';
+import { Body, Controller, Get, Post } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
-import { User, UserDocument } from '../users/user.schema';
+import { CreateUserDto } from '../users/dto/create-user.dto';
+import { UserDocument } from '../users/user.schema';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './current-user.decorator';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { JwtRefreshAuthGuard } from './guards/jwt-refresh-auth.guard';
-import { LocalAuthGuard } from './guards/local-auth.guard';
-import { LoginResponse } from './interfaces/login-response.interface';
+import { AuthDto } from './dto/auth.dto';
+import { AuthTokens } from './interfaces/auth-token.interface';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @ApiBody({
-    schema: {
-      properties: {
-        email: { example: 'email@example.com', type: 'string' },
-        password: { example: 'pybtez-naskoB-8fizmi', type: 'string' },
-      },
-      type: 'object',
-    },
-  })
-  @ApiOkResponse({
-    description: 'Login successful.',
-  })
-  @ApiProperty({
-    example: {
-      email: 'email@example.com',
-      password: 'pybtez-naskoB-8fizmi',
-    },
-  })
-  @HttpCode(HttpStatusCode.Ok)
-  @Post('login')
-  @UseGuards(LocalAuthGuard)
-  async login(@CurrentUser() user: User): Promise<LoginResponse> {
-    return this.authService.login(user);
+  @Post('signup')
+  signup(@Body() createUserDto: CreateUserDto): Promise<AuthTokens> {
+    return this.authService.signUp(createUserDto);
   }
 
-  @ApiBearerAuth()
-  @ApiOkResponse({
-    description: 'Refresh token successful.',
-  })
-  @HttpCode(HttpStatusCode.Ok)
-  @Post('refresh')
-  @UseGuards(JwtRefreshAuthGuard)
-  async refresh(@CurrentUser() user: User): Promise<LoginResponse> {
-    return this.authService.login(user);
+  @Post('sign-in')
+  signIn(@Body() authDto: AuthDto): Promise<AuthTokens> {
+    return this.authService.signIn(authDto);
   }
 
-  @ApiBearerAuth()
-  @ApiOkResponse({
-    description: 'Logout successful.',
-  })
   @Get('logout')
-  @HttpCode(HttpStatusCode.Ok)
-  @UseGuards(JwtAuthGuard)
-  async logout(@CurrentUser() user: User): Promise<UserDocument> {
-    return this.authService.logout(user._id.toHexString());
+  async logout(@CurrentUser() user: UserDocument): Promise<void> {
+    await this.authService.logout(user._id.toString());
   }
 }
