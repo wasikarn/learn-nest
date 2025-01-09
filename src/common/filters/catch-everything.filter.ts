@@ -5,6 +5,9 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
+
+// Add the following pragma to inform TypeScript of ECMAScript 2022
+/// <reference lib="es2022" />
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { HttpAdapterHost } from '@nestjs/core';
 import { response } from 'express';
@@ -24,7 +27,7 @@ export class CatchEverythingFilter<T extends Error> implements ExceptionFilter {
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
     const responseBody = {
-      details: exception.cause,
+      details: 'cause' in exception ? exception.cause : undefined,
       error: exception.message,
       message: response.statusMessage,
       path: httpAdapter.getRequestUrl(ctx.getRequest()),
