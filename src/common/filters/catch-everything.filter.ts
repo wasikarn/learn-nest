@@ -5,9 +5,6 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-
-// Add the following pragma to inform TypeScript of ECMAScript 2022
-/// <reference lib="es2022" />
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { HttpAdapterHost } from '@nestjs/core';
 import { response } from 'express';
