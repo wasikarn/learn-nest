@@ -1,4 +1,4 @@
-import { ValidationPipe } from '@nestjs/common';
+import { ConsoleLogger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
@@ -15,6 +15,12 @@ async function bootstrap(): Promise<void> {
   const app: NestExpressApplication =
     await NestFactory.create<NestExpressApplication>(AppModule, {
       bufferLogs: true,
+      logger: new ConsoleLogger({
+        colors: true,
+        compact: true,
+        json: true,
+        timestamp: true,
+      }),
     });
 
   const configService: ConfigService = app.get(ConfigService);
