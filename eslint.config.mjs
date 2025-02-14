@@ -1,81 +1,101 @@
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
-import unusedImports from 'eslint-plugin-unused-imports';
-import jestPlugin from 'eslint-plugin-jest';
+import prettierConfig from 'eslint-config-prettier';
+import prettierPlugin from 'eslint-plugin-prettier';
 import perfectionist from 'eslint-plugin-perfectionist';
-import stylistic from '@stylistic/eslint-plugin';
+import jestPlugin from 'eslint-plugin-jest';
+import unusedImports from 'eslint-plugin-unused-imports';
 
-export default tseslint.config({
-  files: ['{src,apps,libs,test}/**/*.ts'],
-  extends: [
-    eslint.configs.recommended,
-    tseslint.configs.recommended,
-    tseslint.configs.stylistic,
-    perfectionist.configs['recommended-natural'],
-  ],
-  languageOptions: {
-    parser: tseslint.parser,
-    parserOptions: {
-      ecmaVersion: 'latest',
-      projectService: true,
-      tsconfigRootDir: import.meta.dirname,
-    },
+export default tseslint.config(
+  {
+    files: ['{src,test}/**/*.{ts,tsx}'],
+    ignores: ['**/build/**', '**/dist/**', '**/node_modules/**'],
   },
-  plugins: {
-    '@typescript-eslint': tseslint.plugin,
-    'unused-imports': unusedImports,
-    '@stylistic': stylistic,
-    jest: jestPlugin,
-  },
-  settings: {
-    'import/resolver': {
-      typescript: {
-        alwaysTryTypes: true,
+  eslint.configs.recommended,
+  tseslint.configs.recommendedTypeChecked,
+  tseslint.configs.stylisticTypeChecked,
+  perfectionist.configs['recommended-natural'],
+  prettierConfig,
+  {
+    languageOptions: {
+      parser: tseslint.parser,
+      parserOptions: {
+        ecmaVersion: 'latest',
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
     },
-  },
-  rules: {
-    '@typescript-eslint/array-type': 'error',
-    '@typescript-eslint/no-explicit-any': 'off',
-    'no-unused-vars': 'off',
-    'no-return-await': 'error',
-    'unused-imports/no-unused-imports': 'error',
-    'unused-imports/no-unused-vars': [
-      'warn',
-      {
-        vars: 'all',
-        varsIgnorePattern: '^_',
-        args: 'after-used',
-        argsIgnorePattern: '^_',
+    plugins: {
+      '@typescript-eslint': tseslint.plugin,
+      'unused-imports': unusedImports,
+      'eslint-plugin-prettier': prettierPlugin,
+      'eslint-plugin-perfectionist': perfectionist,
+      jest: jestPlugin,
+    },
+    rules: {
+      '@typescript-eslint/no-unsafe-argument': 'error',
+      '@typescript-eslint/no-unsafe-assignment': 'error',
+      '@typescript-eslint/no-unsafe-call': 'error',
+      '@typescript-eslint/no-unsafe-member-access': 'error',
+      '@typescript-eslint/no-unsafe-return': 'error',
+      '@typescript-eslint/no-unused-vars': 'off',
+      'lines-between-class-members': [
+        'error',
+        {
+          enforce: [
+            { blankLine: 'never', next: 'field', prev: 'field' },
+            { blankLine: 'always', next: 'method', prev: 'field' },
+            { blankLine: 'always', next: 'method', prev: 'method' },
+          ],
+        },
+      ],
+      'padding-line-between-statements': [
+        'error',
+        { blankLine: 'always', next: 'return', prev: '*' },
+        { blankLine: 'always', next: '*', prev: ['const', 'let', 'var'] },
+        {
+          blankLine: 'any',
+          next: ['const', 'let', 'var'],
+          prev: ['const', 'let', 'var'],
+        },
+        { blankLine: 'always', next: '*', prev: 'directive' },
+        { blankLine: 'any', next: 'directive', prev: 'directive' },
+        { blankLine: 'always', next: '*', prev: ['case', 'default', 'if'] },
+        { blankLine: 'always', next: 'try', prev: '*' },
+        { blankLine: 'always', next: '*', prev: 'try' },
+        { blankLine: 'always', next: 'throw', prev: '*' },
+      ],
+      'perfectionist/sort-classes': 'off',
+      'unused-imports/no-unused-imports': 'error',
+      'unused-imports/no-unused-vars': [
+        'warn',
+        {
+          args: 'after-used',
+          argsIgnorePattern: '^_',
+          vars: 'all',
+          varsIgnorePattern: '^_',
+        },
+      ],
+    },
+    settings: {
+      'import/resolver': {
+        typescript: {
+          alwaysTryTypes: true,
+          projectService: true,
+          tsconfigRootDir: import.meta.dirname,
+        },
       },
-    ],
-    '@stylistic/padding-line-between-statements': [
-      'error',
-      { blankLine: 'always', prev: '*', next: 'return' },
-      { blankLine: 'always', prev: ['const', 'let', 'var'], next: '*' },
-      {
-        blankLine: 'any',
-        prev: ['const', 'let', 'var'],
-        next: ['const', 'let', 'var'],
-      },
-      { blankLine: 'always', prev: 'directive', next: '*' },
-      { blankLine: 'any', prev: 'directive', next: 'directive' },
-      { blankLine: 'always', prev: ['case', 'default', 'if'], next: '*' },
-      { blankLine: 'always', prev: '*', next: 'try' },
-      { blankLine: 'always', prev: 'try', next: '*' },
-      { blankLine: 'always', prev: '*', next: 'throw' },
-    ],
-    'perfectionist/sort-classes': 'off',
+    },
   },
-  ignores: [
-    '**/node_modules/**',
-    '**/dist/**',
-    '**/coverage/**',
-    '**/@generated/**',
-    '**/*.config.mjs',
-    '**/*.config.js',
-    'package.json',
-  ],
-});
+  {
+    extends: [jestPlugin.configs['flat/recommended']],
+    files: ['test/**'],
+    rules: {
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      'jest/expect-expect': 'off',
+    },
+  },
+);
