@@ -1,24 +1,24 @@
 import eslint from '@eslint/js';
-import tseslint from 'typescript-eslint';
+import tslint from 'typescript-eslint';
 import prettierConfig from 'eslint-config-prettier';
 import prettierPlugin from 'eslint-plugin-prettier';
 import perfectionist from 'eslint-plugin-perfectionist';
 import jestPlugin from 'eslint-plugin-jest';
 import unusedImports from 'eslint-plugin-unused-imports';
 
-export default tseslint.config(
+export default tslint.config(
   {
     files: ['{src,test}/**/*.{ts,tsx}'],
     ignores: ['**/build/**', '**/dist/**', '**/node_modules/**'],
   },
   eslint.configs.recommended,
-  tseslint.configs.recommendedTypeChecked,
-  tseslint.configs.stylisticTypeChecked,
+  tslint.configs.recommendedTypeChecked,
+  tslint.configs.stylisticTypeChecked,
   perfectionist.configs['recommended-natural'],
   prettierConfig,
   {
     languageOptions: {
-      parser: tseslint.parser,
+      parser: tslint.parser,
       parserOptions: {
         ecmaVersion: 'latest',
         projectService: true,
@@ -26,11 +26,11 @@ export default tseslint.config(
       },
     },
     plugins: {
-      '@typescript-eslint': tseslint.plugin,
-      'unused-imports': unusedImports,
-      'eslint-plugin-prettier': prettierPlugin,
+      '@typescript-eslint': tslint.plugin,
       'eslint-plugin-perfectionist': perfectionist,
+      'eslint-plugin-prettier': prettierPlugin,
       jest: jestPlugin,
+      'unused-imports': unusedImports,
     },
     rules: {
       '@typescript-eslint/no-unsafe-argument': 'error',
@@ -39,16 +39,7 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-member-access': 'error',
       '@typescript-eslint/no-unsafe-return': 'error',
       '@typescript-eslint/no-unused-vars': 'off',
-      'lines-between-class-members': [
-        'error',
-        {
-          enforce: [
-            { blankLine: 'never', next: 'field', prev: 'field' },
-            { blankLine: 'always', next: 'method', prev: 'field' },
-            { blankLine: 'always', next: 'method', prev: 'method' },
-          ],
-        },
-      ],
+      'lines-between-class-members': ['error', 'always'],
       'padding-line-between-statements': [
         'error',
         { blankLine: 'always', next: 'return', prev: '*' },
@@ -92,9 +83,9 @@ export default tseslint.config(
     files: ['test/**'],
     rules: {
       '@typescript-eslint/no-unsafe-argument': 'off',
-      '@typescript-eslint/no-unsafe-return': 'off',
       '@typescript-eslint/no-unsafe-call': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
       'jest/expect-expect': 'off',
     },
   },
